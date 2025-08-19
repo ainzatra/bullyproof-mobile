@@ -58,7 +58,7 @@ const Login = () => {
       // For a real app, call your auth API here
       Alert.alert('Success', `Welcome back, ${email}`)
       setUser({ id: '1', name: 'User', email }) // Mock user data
-      router.push('/onboarding')
+      router.replace('/onboarding')
     }, 900)
   }
 
@@ -75,7 +75,7 @@ const Login = () => {
           {/* Header area */}
           <View className="px-6 pt-12 pb-6">
             <View className="flex-row items-center">
-              <Image source={images.logo} className="w-12 h-12 mr-3" />
+              <Image source={images.logoDark} className="w-12 h-12 mr-3" />
               <Text className="text-white text-3xl font-extrabold">Login</Text>
             </View>
             <Text className="text-[#bcd3df] mt-2">Please sign in to continue</Text>

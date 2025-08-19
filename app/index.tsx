@@ -6,8 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
   return (
-    <SafeAreaView className="px-4 flex h-full items-center justify-between bg-primary-main py-10">
-      <Image source={images.logo} className="w-36 h-36" />
+    <SafeAreaView className="px-4 flex h-full items-center justify-around bg-primary-main py-10">
+      <Image source={images.logoDark} className="w-36 h-36" />
 
       <View className="w-full px-8">
         <Link
