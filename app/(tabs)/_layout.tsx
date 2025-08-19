@@ -6,9 +6,14 @@ const _layout = () => {
   return (
     <Tabs>
         <Tabs.Screen 
-            name='index'
+            name='onboarding'
             options={{
-                title: 'Home',
+                headerShown: false,
+            }}
+        />
+        <Tabs.Screen 
+            name='home'
+            options={{
                 headerShown: false,
             }}
         />
