@@ -1,56 +1,60 @@
-import { useUser } from "@/stores/useUserStore";
-import { Stack, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useUser } from '@/stores/useUserStore';
+import { Stack, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import './globals.css';
 
 export default function RootLayout() {
-  const user = useUser()
-  const router = useRouter()
-  const [ready, setReady] = useState(false)
+  const user = useUser();
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
 
   // Run redirect after mount
   useEffect(() => {
-    setReady(true) // layout is mounted
-  }, [])
+    setReady(true); // layout is mounted
+  }, []);
 
   useEffect(() => {
     if (ready && user) {
-      router.replace('/home') // safe navigation
+      router.replace('/onboarding'); // safe navigation
     }
-  }, [ready, user])
-  
+
+    if (ready && !user) {
+      router.replace('/login'); // safe navigation
+    }
+  }, [ready, user]);
+
   return (
     <Stack>
       <Stack.Screen
-        name='index'
+        name="index"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name='onboarding'
+        name="onboarding"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name='welcome'
+        name="welcome"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name='(tabs)'
+        name="(tabs)"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name='(auth)'
+        name="(auth)"
         options={{
           headerShown: false,
         }}
       />
     </Stack>
-  )
+  );
 }

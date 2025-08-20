@@ -1,19 +1,19 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { router } from 'expo-router'
-import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 type User = {
-  id: string
-  name: string
-  email: string
-}
+  id: string;
+  name: string;
+  email: string;
+};
 
 type UserStore = {
-  user: User | null
-  setUser: (user: User) => void
-  logout: () => void
-}
+  user: User | null;
+  setUser: (user: User) => void;
+  logout: () => void;
+};
 
 const useUserStore = create<UserStore>()(
   persist(
@@ -23,17 +23,17 @@ const useUserStore = create<UserStore>()(
       setUser: (user: User) => set({ user }),
 
       logout: () => {
-        set({ user: null })
-        router.replace('/login')
+        set({ user: null });
+        router.replace('/login');
       },
     }),
     {
       name: 'user-storage',
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
-)
+    },
+  ),
+);
 
-export const useUser = () => useUserStore((s) => s.user)
-export const useSetUser = () => useUserStore((s) => s.setUser)
-export const useLogoutUser = () => useUserStore((s) => s.logout)
+export const useUser = () => useUserStore((s) => s.user);
+export const useSetUser = () => useUserStore((s) => s.setUser);
+export const useLogoutUser = () => useUserStore((s) => s.logout);
