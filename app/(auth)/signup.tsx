@@ -2,10 +2,11 @@ import { images } from '@/constants/images';
 import { useSetUser, useUser } from '@/stores/useUserStore';
 import { Feather } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -44,6 +45,23 @@ const Signup = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  // Scroll + keyboard helpers — make ScrollView bottom padding follow the keyboard height
+  const scrollRef = useRef<any>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', (e: any) => {
+      setKeyboardHeight(e.endCoordinates?.height ?? 0);
+    });
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
   // Generic input handler
   const handleChange = (name: string, value: string | boolean) => {
     setFormData((prev) => ({
@@ -75,7 +93,7 @@ const Signup = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-[#063b58]"
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0} // adjust if needed
     >
@@ -111,8 +129,13 @@ const Signup = () => {
         </View>
 
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          ref={scrollRef}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: keyboardHeight > 0 ? keyboardHeight + 40 : 0,
+          }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
         >
           {/* Personal Information */}
