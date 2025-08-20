@@ -24,7 +24,7 @@ const useUserStore = create<UserStore>()(
 
       logout: () => {
         set({ user: null });
-        router.replace('/login');
+        router.replace('/');
       },
     }),
     {

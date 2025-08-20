@@ -1,9 +1,13 @@
-import { InputField, PasswordField, PrimaryButton } from '@/components/FormControls'
-import { images } from '@/constants/images'
-import { useSetUser } from '@/stores/useUserStore'
-import { AntDesign, Feather, Fontisto } from '@expo/vector-icons'
-import { Link, useRouter } from 'expo-router'
-import React, { useState } from 'react'
+import {
+  InputField,
+  PasswordField,
+  PrimaryButton,
+} from '@/components/FormControls';
+import { images } from '@/constants/images';
+import { useSetUser } from '@/stores/useUserStore';
+import { AntDesign, Fontisto } from '@expo/vector-icons';
+import { Link, useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
   Alert,
   Image,
@@ -14,7 +18,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native'
+} from 'react-native';
 /**
  * Improved Login Screen
  * - Uses a clean header with logo
@@ -27,40 +31,39 @@ import {
  */
 
 const Login = () => {
-  const router = useRouter()
-  const setUser = useSetUser()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [secure, setSecure] = useState(true)
-  const [remember, setRemember] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const setUser = useSetUser();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [secure, setSecure] = useState(true);
+  const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
-  
 
   const onLogin = () => {
     // basic validation & fake submit for demo
     if (!email.trim() || !password) {
-      Alert.alert('Validation', 'Please enter email and password')
-      return
+      Alert.alert('Validation', 'Please enter email and password');
+      return;
     }
 
     if (!validateEmail(email)) {
-      Alert.alert('Validation', 'Please enter valid email address')
-      return
+      Alert.alert('Validation', 'Please enter valid email address');
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     setTimeout(() => {
-      setLoading(false)
+      setLoading(false);
       // For a real app, call your auth API here
-      Alert.alert('Success', `Welcome back, ${email}`)
-      setUser({ id: '1', name: 'User', email }) // Mock user data
-      router.replace('/onboarding')
-    }, 900)
-  }
+      Alert.alert('Success', `Welcome back, ${email}`);
+      setUser({ id: '1', name: 'User', email }); // Mock user data
+      router.replace('/onboarding');
+    }, 900);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -78,7 +81,9 @@ const Login = () => {
               <Image source={images.logoDark} className="w-12 h-12 mr-3" />
               <Text className="text-white text-3xl font-extrabold">Login</Text>
             </View>
-            <Text className="text-[#bcd3df] mt-2">Please sign in to continue</Text>
+            <Text className="text-[#bcd3df] mt-2">
+              Please sign in to continue
+            </Text>
           </View>
 
           {/* Card */}
@@ -109,8 +114,8 @@ const Login = () => {
 
             {/* Form */}
             <View className="gap-4">
-            <View className="flex-row items-center bg-gray-300 rounded-full px-1 py-1">
-              <View className="w-12 h-12 rounded-full bg-white items-center justify-center">
+              <View className="flex-row items-center bg-gray-300 rounded-full px-1 py-1">
+                <View className="w-12 h-12 rounded-full bg-white items-center justify-center">
                   <Fontisto name="email" size={24} color="black" />
                 </View>
                 <InputField
@@ -125,34 +130,39 @@ const Login = () => {
                 <View className="w-12 h-12 rounded-full bg-white items-center justify-center">
                   <AntDesign name="lock" size={24} color="black" />
                 </View>
-                <PasswordField value={password} onChangeText={setPassword} placeholder="Password" />
+                <PasswordField
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Password"
+                />
               </View>
 
-              <View className="flex-row justify-between items-center px-1">
+              <View className="flex-row justify-end items-center px-1">
                 <TouchableOpacity
-                  onPress={() => setRemember(!remember)}
-                  className="flex-row items-center"
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: remember }}
+                  onPress={() =>
+                    Alert.alert(
+                      'Forgot Password',
+                      'Password reset flow goes here',
+                    )
+                  }
                 >
-                  <View className={`flex items-center justify-center w-4 h-4 mr-2 rounded-sm ${remember ? 'bg-[#c86d55]' : 'bg-white border'}`}>
-                    {remember && <Feather name='check' size={12}/>}
-                  </View>
-                  <Text className="text-sm text-gray-600">Remember me</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => Alert.alert('Forgot Password', 'Password reset flow goes here')}>
-                  <Text className="text-sm text-gray-600">Forgot Password?</Text>
+                  <Text className="text-sm text-gray-600">
+                    Forgot Password?
+                  </Text>
                 </TouchableOpacity>
               </View>
 
-              <PrimaryButton title={loading ? 'Signing in...' : 'Login'} onPress={onLogin} loading={loading} />
+              <PrimaryButton
+                title={loading ? 'Signing in...' : 'Login'}
+                onPress={onLogin}
+                loading={loading}
+              />
             </View>
           </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
