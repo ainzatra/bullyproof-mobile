@@ -59,7 +59,6 @@ const Login = () => {
     setTimeout(() => {
       setLoading(false);
       // For a real app, call your auth API here
-      Alert.alert('Success', `Welcome back, ${email}`);
       setUser({ id: '1', name: 'User', email }); // Mock user data
       router.replace('/onboarding');
     }, 900);
