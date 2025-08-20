@@ -1,5 +1,6 @@
 import { images } from '@/constants/images'
 import { useSetUser, useUser } from '@/stores/useUserStore'
+import { Feather } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
@@ -142,7 +143,7 @@ const Signup = () => {
                 options={Array.from({ length: 12 }, (_, i) => ({ label: `Grade ${i+1}`, value: `${i+1}` }))}
                 selectedValue={formData.grade}
                 onValueChange={value => handleChange('grade', value)}
-                placeholder="Grade Level"
+                placeholder="Grade"
                 style={{ width: 100 }}
               />
               <InputField 
@@ -209,7 +210,10 @@ const Signup = () => {
               onPress={() => handleChange('agree', !formData.agree)} 
               className="mr-3"
             >
-              <View className={`w-4 h-4 ${formData.agree ? 'bg-[#c86d55]' : 'bg-white border'} rounded-sm`} />
+              <View className={`flex items-center w-4 h-4 ${formData.agree ? 'bg-[#c86d55]' : 'bg-white border'} rounded-sm`} >
+              {formData.agree && <Feather name='check' size={12}/>}
+              </View>
+              
             </TouchableOpacity>
             <Text className="text-gray-600">I have read T&C and Privacy Policy.</Text>
           </View>

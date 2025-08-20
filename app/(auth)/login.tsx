@@ -1,7 +1,7 @@
 import { InputField, PasswordField, PrimaryButton } from '@/components/FormControls'
 import { images } from '@/constants/images'
 import { useSetUser } from '@/stores/useUserStore'
-import { AntDesign, Fontisto } from '@expo/vector-icons'
+import { AntDesign, Feather, Fontisto } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
@@ -135,7 +135,9 @@ const Login = () => {
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: remember }}
                 >
-                  <View className={`w-4 h-4 mr-2 rounded-sm ${remember ? 'bg-[#c86d55]' : 'bg-white border'}`} />
+                  <View className={`flex items-center justify-center w-4 h-4 mr-2 rounded-sm ${remember ? 'bg-[#c86d55]' : 'bg-white border'}`}>
+                    {remember && <Feather name='check' size={12}/>}
+                  </View>
                   <Text className="text-sm text-gray-600">Remember me</Text>
                 </TouchableOpacity>
 
