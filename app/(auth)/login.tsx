@@ -5,6 +5,7 @@ import {
 } from '@/components/FormControls';
 import { images } from '@/constants/images';
 import { useSetUser } from '@/stores/useUserStore';
+import { request } from '@/utils/utils';
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -44,7 +45,7 @@ const Login = () => {
     return regex.test(email);
   };
 
-  const onLogin = () => {
+  const onLogin = async () => {
     // basic validation & fake submit for demo
     if (!email.trim() || !password) {
       Alert.alert('Validation', 'Please enter email and password');
@@ -56,12 +57,32 @@ const Login = () => {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      // For a real app, call your auth API here
-      setUser({ id: '1', name: 'User', email }); // Mock user data
+
+    try {
+      const response = await request('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        Alert.alert('Login Failed', errorData.message || 'Unknown error');
+        return;
+      }
+      const data = await response.json();
+      setUser(data);
       router.replace('/onboarding');
-    }, 900);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to login. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   // For a real app, call your auth API here
+    //   setUser({ id: '1', name: 'User', email }); // Mock user data
+    //   router.replace('/onboarding');
+    // }, 900);
   };
 
   return (

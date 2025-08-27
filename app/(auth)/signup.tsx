@@ -1,5 +1,6 @@
 import { images } from '@/constants/images';
 import { useSetUser, useUser } from '@/stores/useUserStore';
+import { request } from '@/utils/utils';
 import { Feather } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -28,20 +29,22 @@ const Signup = () => {
   const setUser = useSetUser();
   const [showDate, setShowDate] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
-    dob: '',
+    birthday: '',
     gender: '',
     grade: '',
     section: '',
     password: '',
-    confirmPassword: '',
-    parentName: '',
-    parentEmail: '',
-    contact: '',
-    relationship: '',
-    address: '',
+    confirm_password: '',
     agree: false,
+    guardian: {
+      name: '',
+      phone: '',
+      email: '',
+      relationship: '',
+      address: '',
+    },
   });
   const [loading, setLoading] = useState(false);
 
@@ -62,33 +65,64 @@ const Signup = () => {
     };
   }, []);
 
-  // Generic input handler
+  // Generic input handler (supports nested keys like 'guardian.name')
   const handleChange = (name: string, value: string | boolean) => {
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData((prev: any) => ({
+        ...prev,
+        [parent]: {
+          ...(prev as any)[parent],
+          [child]: value,
+        },
+      }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const onSubmit = () => {
-    const completeForm = Object.values(formData).every(
-      (field) => field !== '' && field !== false,
-    );
+  const onSubmit = async () => {
+    const completeForm = Object.entries(formData).every(([key, val]) => {
+      if (key === 'guardian') {
+        return Object.values(val as any).every((v) => v !== '');
+      }
+      return val !== '' && val !== false;
+    });
     if (!completeForm) {
       Alert.alert('Validation', 'Please fill up all fields.');
       return;
     }
-    if (!formData.password || formData.password !== formData.confirmPassword) {
+    if (!formData.password || formData.password !== formData.confirm_password) {
       Alert.alert('Validation', 'Passwords do not match.');
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setUser({ id: '1', name: formData.fullName, email: formData.email }); // Mock user data
+
+    try {
+      const response = await request('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ ...formData, grade: Number(formData.grade) }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log('Signup error:', errorData);
+        throw new Error(errorData.message || 'Signup failed');
+      }
+
+      const data = await response.json();
+      setUser(data.user);
       router.replace('/onboarding');
-    }, 1000);
+    } catch (error: any) {
+      console.error('Signup exception:', error);
+      Alert.alert('Error', error.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -132,7 +166,7 @@ const Signup = () => {
           ref={scrollRef}
           contentContainerStyle={{
             flexGrow: 1,
-            paddingBottom: keyboardHeight > 0 ? keyboardHeight + 40 : 0,
+            paddingBottom: keyboardHeight > 0 ? keyboardHeight + 40 : 20,
           }}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
@@ -144,8 +178,8 @@ const Signup = () => {
           </Text>
           <View className="gap-3 mb-4">
             <InputField
-              value={formData.fullName}
-              onChangeText={(text) => handleChange('fullName', text)}
+              value={formData.name}
+              onChangeText={(text) => handleChange('name', text)}
               placeholder="Full name"
               additionalClass="bg-gray-200"
             />
@@ -159,8 +193,8 @@ const Signup = () => {
 
             <View className="flex-row gap-3">
               <DatePickerField
-                value={formData.dob}
-                onChange={(value) => handleChange('dob', value)}
+                value={formData.birthday}
+                onChange={(value) => handleChange('birthday', value)}
                 placeholder="Date of birth"
                 additionalClass="bg-gray-200 "
               />
@@ -203,8 +237,8 @@ const Signup = () => {
               additionalClass="bg-gray-200"
             />
             <PasswordField
-              value={formData.confirmPassword}
-              onChangeText={(text) => handleChange('confirmPassword', text)}
+              value={formData.confirm_password}
+              onChangeText={(text) => handleChange('confirm_password', text)}
               placeholder="Confirm Password"
               additionalClass="bg-gray-200"
             />
@@ -216,34 +250,36 @@ const Signup = () => {
           </Text>
           <View className="gap-3 mb-3">
             <InputField
-              value={formData.parentName}
-              onChangeText={(text) => handleChange('parentName', text)}
+              value={formData.guardian.name}
+              onChangeText={(text) => handleChange('guardian.name', text)}
               placeholder="Full name"
               additionalClass="bg-gray-200"
             />
             <InputField
-              value={formData.parentEmail}
-              onChangeText={(text) => handleChange('parentEmail', text)}
+              value={formData.guardian.email}
+              onChangeText={(text) => handleChange('guardian.email', text)}
               placeholder="Email"
               keyboardType="email-address"
               additionalClass="bg-gray-200"
             />
             <InputField
-              value={formData.contact}
-              onChangeText={(text) => handleChange('contact', text)}
+              value={formData.guardian.phone}
+              onChangeText={(text) => handleChange('guardian.phone', text)}
               placeholder="Contact Number"
               keyboardType="phone-pad"
               additionalClass="bg-gray-200"
             />
             <InputField
-              value={formData.relationship}
-              onChangeText={(text) => handleChange('relationship', text)}
+              value={formData.guardian.relationship}
+              onChangeText={(text) =>
+                handleChange('guardian.relationship', text)
+              }
               placeholder="Relationship"
               additionalClass="bg-gray-200"
             />
             <InputField
-              value={formData.address}
-              onChangeText={(text) => handleChange('address', text)}
+              value={formData.guardian.address}
+              onChangeText={(text) => handleChange('guardian.address', text)}
               placeholder="Address"
               additionalClass="bg-gray-200"
             />
