@@ -8,6 +8,7 @@ type User = {
   name: string;
   email: string;
   token: string;
+  isVerified?: boolean;
 };
 
 type UserStore = {

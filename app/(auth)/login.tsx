@@ -59,13 +59,21 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await request('/auth/login', {
+      const response = await request('/auth/login', false, {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        if (errorData.message === 'Not verified yet') {
+          // Navigate to dynamic verify route with the email as a path param
+          router.replace({ pathname: '/verify/[email]', params: { email } });
+          Alert.alert('Please verify your account first');
+          return;
+        }
+
         Alert.alert('Login Failed', errorData.message || 'Unknown error');
         return;
       }

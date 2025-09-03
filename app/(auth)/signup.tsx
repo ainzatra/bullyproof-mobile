@@ -103,7 +103,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const response = await request('/auth/signup', {
+      const response = await request('/auth/signup', false, {
         method: 'POST',
         body: JSON.stringify({ ...formData, grade: Number(formData.grade) }),
       });
@@ -114,11 +114,11 @@ const Signup = () => {
         throw new Error(errorData.message || 'Signup failed');
       }
 
-      const data = await response.json();
-      setUser(data.user);
-      router.replace('/onboarding');
+      router.replace({
+        pathname: '/verify/[email]',
+        params: { email: formData.email },
+      });
     } catch (error: any) {
-      console.error('Signup exception:', error);
       Alert.alert('Error', error.message || 'An error occurred');
     } finally {
       setLoading(false);

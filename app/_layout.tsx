@@ -14,13 +14,21 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (ready && user) {
+    if (!ready) return;
+
+    if (user) {
+      // Only treat explicit `false` as not verified. If `isVerified` is `true` or `undefined`,
+      // proceed to onboarding. This avoids accidental redirects when `isVerified` is missing.
+      if (user.isVerified === false) {
+        router.replace('/login');
+        return;
+      }
       router.replace('/onboarding'); // safe navigation
+      return;
     }
 
-    if (ready && !user) {
-      router.replace('/'); // safe navigation
-    }
+    // No user -> go to landing/index
+    router.replace('/'); // safe navigation
   }, [ready, user]);
 
   return (

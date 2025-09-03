@@ -12,43 +12,62 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-type Option = { label: string; value: string }
+type Option = { label: string; value: string };
 
 type ButtonProps = {
-  title: string
-  onPress?: () => void
-  disabled?: boolean
-  loading?: boolean
-  style?: any
-}
+  title: string;
+  onPress?: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  additionalClasses?: any;
+};
 
-export const PrimaryButton = ({ title, onPress, disabled, loading, style }: ButtonProps) => {
+export const PrimaryButton = ({
+  title,
+  onPress,
+  disabled,
+  loading,
+  additionalClasses,
+}: ButtonProps) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
       disabled={disabled || loading}
-      className="bg-[#c86d55] rounded-full py-3 items-center"
-      style={style}
+      className={`bg-[#c86d55] rounded-full py-3 items-center ${additionalClasses}`}
     >
-      {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-semibold">{title}</Text>}
+      {loading ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <Text className="text-white font-semibold">{title}</Text>
+      )}
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 type InputProps = {
-  value: string
-  onChangeText: (t: string) => void
-  placeholder?: string
-  keyboardType?: any
-  secureTextEntry?: boolean
-  style?: any
-  placeholderTextColor?: string
-  additionalClass?: string
-  onPress?: (e: any) => void
-}
+  value: string;
+  onChangeText: (t: string) => void;
+  placeholder?: string;
+  keyboardType?: any;
+  secureTextEntry?: boolean;
+  style?: any;
+  placeholderTextColor?: string;
+  additionalClass?: string;
+  onPress?: (e: any) => void;
+};
 
-export const InputField = ({ value, onChangeText, placeholder, keyboardType, secureTextEntry, style, placeholderTextColor = '#6b7280', additionalClass, onPress }: InputProps) => {
+export const InputField = ({
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType,
+  secureTextEntry,
+  style,
+  placeholderTextColor = '#6b7280',
+  additionalClass,
+  onPress,
+}: InputProps) => {
   return (
     <TextInput
       value={value}
@@ -61,13 +80,21 @@ export const InputField = ({ value, onChangeText, placeholder, keyboardType, sec
       style={style}
       onPress={onPress}
     />
-  )
-}
+  );
+};
 
-export const PasswordField = ({ value, onChangeText, placeholder = 'Password' , style, additionalClass }: InputProps) => {
-  const [secure, setSecure] = useState(true)
+export const PasswordField = ({
+  value,
+  onChangeText,
+  placeholder = 'Password',
+  style,
+  additionalClass,
+}: InputProps) => {
+  const [secure, setSecure] = useState(true);
   return (
-    <View className={`flex-row items-center flex-1 rounded px-4 py-1 ${additionalClass}`}>
+    <View
+      className={`flex-row items-center flex-1 rounded px-4 py-1 ${additionalClass}`}
+    >
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -78,31 +105,59 @@ export const PasswordField = ({ value, onChangeText, placeholder = 'Password' , 
         style={style}
       />
       <TouchableOpacity onPress={() => setSecure(!secure)} className="px-3">
-        <Text>{secure ? <Entypo name='eye' size={24}/> : <Entypo name='eye-with-line' size={24}/>}</Text>
+        <Text>
+          {secure ? (
+            <Entypo name="eye" size={24} />
+          ) : (
+            <Entypo name="eye-with-line" size={24} />
+          )}
+        </Text>
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 type DropdownProps = {
-  options: Option[]
-  selectedValue?: string
-  onValueChange?: (v: string) => void
-  placeholder?: string
-  style?: any
-}
+  options: Option[];
+  selectedValue?: string;
+  onValueChange?: (v: string) => void;
+  placeholder?: string;
+  style?: any;
+};
 
-export const DropdownSelect = ({ options, selectedValue, onValueChange, placeholder = 'Select', style }: DropdownProps) => {
-  const [open, setOpen] = useState(false)
-  const selectedLabel = options.find((o) => o.value === selectedValue)?.label
+export const DropdownSelect = ({
+  options,
+  selectedValue,
+  onValueChange,
+  placeholder = 'Select',
+  style,
+}: DropdownProps) => {
+  const [open, setOpen] = useState(false);
+  const selectedLabel = options.find((o) => o.value === selectedValue)?.label;
   return (
     <View>
-      <Pressable onPress={() => setOpen(true)} className="bg-gray-200 rounded px-4 py-3 flex-row items-center justify-between" style={style}>
-        <Text className={`${selectedLabel ? 'text-gray-800' : 'text-gray-500'}`}>{selectedLabel ?? placeholder}</Text>
+      <Pressable
+        onPress={() => setOpen(true)}
+        className="bg-gray-200 rounded px-4 py-3 flex-row items-center justify-between"
+        style={style}
+      >
+        <Text
+          className={`${selectedLabel ? 'text-gray-800' : 'text-gray-500'}`}
+        >
+          {selectedLabel ?? placeholder}
+        </Text>
         <Text className="text-gray-500">▾</Text>
       </Pressable>
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable className="flex-1 bg-black/40 items-center justify-center" onPress={() => setOpen(false)}>
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
+      >
+        <Pressable
+          className="flex-1 bg-black/40 items-center justify-center"
+          onPress={() => setOpen(false)}
+        >
           <View className="w-11/12 bg-white rounded-lg p-4">
             <FlatList
               data={options}
@@ -110,8 +165,8 @@ export const DropdownSelect = ({ options, selectedValue, onValueChange, placehol
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => {
-                    onValueChange?.(item.value)
-                    setOpen(false)
+                    onValueChange?.(item.value);
+                    setOpen(false);
                   }}
                   className="py-3 border-b border-gray-200"
                 >
@@ -123,16 +178,16 @@ export const DropdownSelect = ({ options, selectedValue, onValueChange, placehol
         </Pressable>
       </Modal>
     </View>
-  )
-}
- 
+  );
+};
+
 export type DatePickerProps = {
-  value?: string
-  onChange?: (v: string) => void
-  placeholder?: string
-  style?: any
-  additionalClass?: string
-}
+  value?: string;
+  onChange?: (v: string) => void;
+  placeholder?: string;
+  style?: any;
+  additionalClass?: string;
+};
 
 /**
  * DatePickerField
@@ -140,17 +195,25 @@ export type DatePickerProps = {
  * - Opens @react-native-community/datetimepicker when pressed.
  * - Calls onChange with an ISO date string (yyyy-mm-dd).
  */
-export const DatePickerField = ({ value, onChange, placeholder = 'Select date', style, additionalClass }: DatePickerProps) => {
-  const [show, setShow] = useState(false)
-  const displayValue = value ?? ''
+export const DatePickerField = ({
+  value,
+  onChange,
+  placeholder = 'Select date',
+  style,
+  additionalClass,
+}: DatePickerProps) => {
+  const [show, setShow] = useState(false);
+  const displayValue = value ?? '';
   return (
-    <View className='flex-1'>
+    <View className="flex-1">
       <Pressable
         onPress={() => setShow(true)}
         className={`bg-gray-200 rounded px-4 py-3 flex-row items-center justify-between ${additionalClass ?? ''}`}
         style={style}
       >
-        <Text className={`${displayValue ? 'text-gray-800' : 'text-gray-500'}`}>{displayValue || placeholder}</Text>
+        <Text className={`${displayValue ? 'text-gray-800' : 'text-gray-500'}`}>
+          {displayValue || placeholder}
+        </Text>
         <Fontisto name="date" size={18} color="gray" />
       </Pressable>
 
@@ -161,21 +224,21 @@ export const DatePickerField = ({ value, onChange, placeholder = 'Select date', 
           display="default"
           onChange={(event, date) => {
             if (date) {
-              const iso = date.toISOString().split('T')[0]
-              onChange?.(iso)
+              const iso = date.toISOString().split('T')[0];
+              onChange?.(iso);
             }
-            setShow(false)
+            setShow(false);
           }}
         />
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   // fallback styles if nativewind isn't used
   row: { flexDirection: 'row', alignItems: 'center' },
-})
+});
 
 export default {
   PrimaryButton,
@@ -183,4 +246,4 @@ export default {
   PasswordField,
   DropdownSelect,
   DatePickerField,
-}
+};

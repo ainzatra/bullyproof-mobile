@@ -1,14 +1,13 @@
+import { useUser } from '@/stores/useUserStore';
 import Constants from 'expo-constants';
 
-export const request = async (url: string, options: RequestInit = {}) => {
-  // Resolve backend URL from multiple sources:
-  // 1. process.env (if injected at build time)
-  // 2. expo config extras (app.json/app.config.js -> extra)
-  // 3. fallback to local IP used in .env for development
+export const request = async (
+  url: string,
+  useToken: boolean,
+  options: RequestInit = {},
+) => {
   const envUrl = process.env.BACKEND_URL;
 
-  // Access expo constants using 'any' to avoid TypeScript manifest typing issues.
-  // This safely checks both expoConfig.extra and manifest.extra for BACKEND_URL.
   const extraUrl =
     (Constants as any)?.expoConfig?.extra?.BACKEND_URL ??
     (Constants as any)?.manifest?.extra?.BACKEND_URL;
@@ -17,12 +16,25 @@ export const request = async (url: string, options: RequestInit = {}) => {
   const base = envUrl || extraUrl || fallback;
   const baseUrl = base.endsWith('/') ? base.slice(0, -1) : base;
 
+  console.log('Making request to:', `${baseUrl}${url}`);
+  // Force headers into a plain object
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  // Add token if requested
+  if (useToken) {
+    const user = useUser();
+    const token = user?.token;
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+
   const response = await fetch(`${baseUrl}${url}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    headers,
   });
 
   return response;

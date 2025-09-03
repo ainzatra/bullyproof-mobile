@@ -1,8 +1,16 @@
-import Slide from '@/components/Slide'
-import { images } from '@/constants/images'
-import { useRouter } from 'expo-router'
-import React, { useRef, useState } from 'react'
-import { Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import Slide from '@/components/Slide';
+import { images } from '@/constants/images';
+import { useUser } from '@/stores/useUserStore';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 /**
  * Onboarding (refactored to use nativewind-style className props)
@@ -12,69 +20,92 @@ import { Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View } fr
  * Note: This file assumes nativewind is configured so `className` works on RN components.
  */
 
-const { width } = Dimensions.get('window')
+const { width } = Dimensions.get('window');
 
 const slides = [
   {
     title: 'You are Safe with BULLYproof',
-    description: "The internet should be a place of connection, not harm. You're not alone — we're here to help you feel safe, supported, and in control.",
+    description:
+      "The internet should be a place of connection, not harm. You're not alone — we're here to help you feel safe, supported, and in control.",
     bgColor: 'bg-primary-main',
-    image: images.onboard1
+    image: images.onboard1,
   },
   {
     title: 'Real - Time Protection',
-    description: 'We gently flag harmful messages, so you can navigate the online world with confidence.',
+    description:
+      'We gently flag harmful messages, so you can navigate the online world with confidence.',
     bgColor: 'bg-[#01437c]',
-    image: images.onboard2
+    image: images.onboard2,
   },
   {
     title: 'Emotion - Aware Insights',
-    description: 'Understand the tone of conversations and keep your space positive and uplifting.',
+    description:
+      'Understand the tone of conversations and keep your space positive and uplifting.',
     bgColor: 'bg-[#078315]',
-    image: images.onboard3
+    image: images.onboard3,
   },
   {
     title: 'Smart Reports, Simple Insights',
-    description: 'Stay informed with easy-to-read trends that help you recognize risks early.',
+    description:
+      'Stay informed with easy-to-read trends that help you recognize risks early.',
     bgColor: 'bg-[#db9426]',
-    image: images.onboard4
+    image: images.onboard4,
   },
   {
     title: 'Instant Alerts, Empowered Choices',
-    description: 'Get notified and take action when it matters most—you\'re always in control.',
+    description:
+      "Get notified and take action when it matters most—you're always in control.",
     bgColor: 'bg-[#b90909]',
-    image: images.onboard5
+    image: images.onboard5,
   },
   {
     title: 'Seamless Multi-Platform Support',
-    description: 'Whether you\'re on social media or messaging apps, we\'re right there with you.',
+    description:
+      "Whether you're on social media or messaging apps, we're right there with you.",
     bgColor: 'bg-[#d93d66]',
-    image: images.onboard6
+    image: images.onboard6,
   },
-]
+];
 
 const Onboarding = () => {
-  const router = useRouter()
-  const scrollRef = useRef<ScrollView | null>(null)
-  const [index, setIndex] = useState(0)
+  const router = useRouter();
+  const user = useUser();
+  const scrollRef = useRef<ScrollView | null>(null);
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    // If the user exists and is explicitly unverified, navigate to the dynamic verify route
+    if (!user) return;
+    if (user.isVerified === false) {
+      if (user.email) {
+        router.replace({
+          pathname: '/verify/[email]',
+          params: { email: user.email },
+        });
+      } else {
+        // fallback if email is missing
+        router.replace('/login');
+      }
+    }
+  }, [user]);
 
   const onScroll = (e: any) => {
-    const x = e.nativeEvent.contentOffset.x
-    const active = Math.round(x / width)
-    setIndex(active)
-  }
+    const x = e.nativeEvent.contentOffset.x;
+    const active = Math.round(x / width);
+    setIndex(active);
+  };
 
   const goNext = () => {
     if (index < slides.length - 1) {
-      scrollRef.current?.scrollTo({ x: width * (index + 1), animated: true })
+      scrollRef.current?.scrollTo({ x: width * (index + 1), animated: true });
     } else {
-      router.replace('/home')
+      router.replace('/home');
     }
-  }
+  };
 
   const onSkip = () => {
-    router.replace('/home')
-  }
+    router.replace('/home');
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-primary-main">
@@ -109,7 +140,7 @@ const Onboarding = () => {
         ))}
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Onboarding
+export default Onboarding;
