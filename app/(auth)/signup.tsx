@@ -1,6 +1,6 @@
+import { useSignup } from '@/api/mutations';
 import { images } from '@/constants/images';
 import { useSetUser, useUser } from '@/stores/useUserStore';
-import { request } from '@/utils/utils';
 import { Feather } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -46,7 +46,7 @@ const Signup = () => {
       address: '',
     },
   });
-  const [loading, setLoading] = useState(false);
+  const signupMutation = useSignup();
 
   // Scroll + keyboard helpers — make ScrollView bottom padding follow the keyboard height
   const scrollRef = useRef<any>(null);
@@ -100,28 +100,18 @@ const Signup = () => {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const response = await request('/auth/signup', false, {
-        method: 'POST',
-        body: JSON.stringify({ ...formData, grade: Number(formData.grade) }),
+      await signupMutation.mutateAsync({
+        ...formData,
+        grade: Number(formData.grade),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Signup error:', errorData);
-        throw new Error(errorData.message || 'Signup failed');
-      }
 
       router.replace({
         pathname: '/verify/[email]',
         params: { email: formData.email },
       });
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'An error occurred');
-    } finally {
-      setLoading(false);
+      Alert.alert('Error', error?.message || 'An error occurred');
     }
   };
 
@@ -304,10 +294,10 @@ const Signup = () => {
           <TouchableOpacity
             onPress={onSubmit}
             className="bg-[#c86d55] rounded-full py-3 items-center mb-4"
-            disabled={loading}
+            disabled={signupMutation.isPending}
           >
             <Text className="text-white font-semibold">
-              {loading ? 'Submitting...' : 'Submit'}
+              {signupMutation.isPending ? 'Submitting...' : 'Submit'}
             </Text>
           </TouchableOpacity>
         </ScrollView>

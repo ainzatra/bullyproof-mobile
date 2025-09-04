@@ -6,16 +6,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { DropdownSelect, PrimaryButton } from '../FormControls';
-import FileUploader from './FileUploader';
+import { PrimaryButton } from '../FormControls';
+import FileUploader from './FileUploader.v2';
 
-type IncidentData = {
-  screenshots?: { uri: string }[];
-  bullyingType?: string;
-  offenderKnown?: 'known' | 'unknown';
-  whoPosted?: string;
-  details?: string;
-};
+import type { FileRef, IncidentData } from './types';
 
 type Props = {
   initial?: Partial<IncidentData>;
@@ -27,7 +21,7 @@ type Props = {
 /**
  * IncidentForm
  * - Stage 2 of the reporting flow.
- * - Upload screenshots, select type of bullying, offender known/unknown, and provide details.
+ * - Upload files, select type of bullying, offender known/unknown, and provide details.
  */
 export default function IncidentForm({
   initial = {},
@@ -35,14 +29,7 @@ export default function IncidentForm({
   onBack,
   keyboardHeight = 0,
 }: Props) {
-  const [screenshots, setScreenshots] = useState<{ uri: string }[]>(
-    initial.screenshots ?? [],
-  );
-  const [bullyingType, setBullyingType] = useState(initial.bullyingType ?? '');
-  const [offenderKnown, setOffenderKnown] = useState<'known' | 'unknown'>(
-    initial.offenderKnown ?? 'unknown',
-  );
-  const [whoPosted, setWhoPosted] = useState(initial.whoPosted ?? '');
+  const [files, setFiles] = useState<FileRef[]>(initial.files ?? []);
   const [details, setDetails] = useState(initial.details ?? '');
   const maxChars = 2000;
 
@@ -76,50 +63,30 @@ export default function IncidentForm({
 
       <View className="space-y-3">
         <FileUploader
-          value={screenshots}
-          onChange={(items) => setScreenshots(items as any)}
+          value={files}
+          onChange={(items) => setFiles(items as any)}
           maxFiles={5}
-          placeholder="Screenshot (Optional)"
+          placeholder="Upload Evidence* (Max 5 files)"
         />
-
-        <View>
-          <Text className="text-sm text-slate-600 mb-2">
-            Types of Bullying*
-          </Text>
-          <DropdownSelect
-            options={bullyOptions}
-            selectedValue={bullyingType}
-            onValueChange={setBullyingType}
-            placeholder="Select type"
-          />
-        </View>
-
-        <View className="mt-2">
-          <Text className="text-sm text-slate-600 mb-2">Who posted*</Text>
-          <DropdownSelect
-            options={whoOptions}
-            selectedValue={whoPosted}
-            onValueChange={setWhoPosted}
-            placeholder="Who posted?"
-          />
-        </View>
 
         <View className="mt-2">
           <Text className="text-sm text-slate-600 mb-2">Incident Details*</Text>
-          <TextInput
-            value={details}
-            onChangeText={(t) => setDetails(t.slice(0, maxChars))}
-            placeholder="Describe the incident (2000 characters)"
-            multiline
-            numberOfLines={6}
-            className="rounded px-4 py-4 bg-gray-100 text-slate-700"
-          />
+          <View className=" bg-gray-100 h-40 rounded-md">
+            <TextInput
+              value={details}
+              onChangeText={(t) => setDetails(t.slice(0, maxChars))}
+              placeholder="Describe the incident (2000 characters)"
+              multiline
+              numberOfLines={6}
+              className="rounded px-4 py-4 text-slate-700"
+            />
+          </View>
           <Text className="text-xs text-slate-400 text-right mt-1">
             {details.length}/{maxChars}
           </Text>
         </View>
 
-        <View className="mt-4 flex-row">
+        <View className="mt-auto flex-row">
           <TouchableOpacity
             onPress={() => onBack?.()}
             className="px-4 py-3 rounded-full bg-slate-100 items-center justify-center mr-3 flex-1"
@@ -130,10 +97,7 @@ export default function IncidentForm({
             title="Proceed"
             onPress={() =>
               onNext({
-                screenshots,
-                bullyingType,
-                offenderKnown,
-                whoPosted,
+                files,
                 details,
               })
             }

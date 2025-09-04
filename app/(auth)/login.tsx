@@ -1,3 +1,4 @@
+import { useLogin } from '@/api/mutations';
 import {
   InputField,
   PasswordField,
@@ -5,7 +6,6 @@ import {
 } from '@/components/FormControls';
 import { images } from '@/constants/images';
 import { useSetUser } from '@/stores/useUserStore';
-import { request } from '@/utils/utils';
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -38,12 +38,13 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [secure, setSecure] = useState(true);
   const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
+
+  const loginMutation = useLogin();
 
   const onLogin = async () => {
     // basic validation & fake submit for demo
@@ -56,41 +57,22 @@ const Login = () => {
       Alert.alert('Validation', 'Please enter valid email address');
       return;
     }
-    setLoading(true);
 
     try {
-      const response = await request('/auth/login', false, {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await loginMutation.mutateAsync({ email, password });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-
-        if (errorData.message === 'Not verified yet') {
-          // Navigate to dynamic verify route with the email as a path param
-          router.replace({ pathname: '/verify/[email]', params: { email } });
-          Alert.alert('Please verify your account first');
-          return;
-        }
-
-        Alert.alert('Login Failed', errorData.message || 'Unknown error');
-        return;
-      }
-      const data = await response.json();
       setUser(data);
       router.replace('/onboarding');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to login. Please try again.');
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      if (error?.message === 'Not verified yet') {
+        // Navigate to dynamic verify route with the email as a path param
+        router.replace({ pathname: '/verify/[email]', params: { email } });
+        Alert.alert('Please verify your account first');
+        return;
+      }
+
+      Alert.alert('Login Failed', error?.message || 'Unknown error');
     }
-    // setTimeout(() => {
-    //   setLoading(false);
-    //   // For a real app, call your auth API here
-    //   setUser({ id: '1', name: 'User', email }); // Mock user data
-    //   router.replace('/onboarding');
-    // }, 900);
   };
 
   return (
@@ -103,7 +85,6 @@ const Login = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View className="flex-1 min-h-screen">
-          {/* Header area */}
           <View className="px-6 pt-12 pb-6">
             <View className="flex-row items-center">
               <Image source={images.logoDark} className="w-12 h-12 mr-3" />
@@ -114,9 +95,7 @@ const Login = () => {
             </Text>
           </View>
 
-          {/* Card */}
           <View className="flex-1 bg-[#f6f6f8] rounded-t-3xl p-6">
-            {/* Tabs */}
             <View className="flex-row items-center justify-center mb-4">
               <Pressable
                 onPress={() => {}}
@@ -135,12 +114,10 @@ const Login = () => {
               </Link>
             </View>
 
-            {/* Draggable handle mimic */}
             <View className="items-center mb-6">
               <View className="w-16 h-1.5 bg-black rounded-full opacity-30" />
             </View>
 
-            {/* Form */}
             <View className="gap-4">
               <View className="flex-row items-center bg-gray-300 rounded-full px-1 py-1">
                 <View className="w-12 h-12 rounded-full bg-white items-center justify-center">
@@ -181,9 +158,9 @@ const Login = () => {
               </View>
 
               <PrimaryButton
-                title={loading ? 'Signing in...' : 'Login'}
+                title={loginMutation.isPending ? 'Signing in...' : 'Login'}
                 onPress={onLogin}
-                loading={loading}
+                loading={loginMutation.isPending}
               />
             </View>
           </View>

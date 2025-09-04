@@ -1,14 +1,17 @@
+import { useCreateReport } from '@/api/mutations';
+import { useReports } from '@/api/queries';
 import Header from '@/components/Header';
 import ImpactForm from '@/components/report/ImpactForm';
 import IncidentForm from '@/components/report/IncidentForm';
 import ReportList from '@/components/report/ReportList';
 import StepProgress from '@/components/report/StepProgress';
 import TermsCard from '@/components/report/TermsCard';
-import VictimDetailsForm from '@/components/report/VictimDetailsForm';
+import { ImpactData, IncidentData } from '@/components/report/types';
 import { useUser } from '@/stores/useUserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -20,14 +23,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ReportScreen = () => {
   const user = useUser();
+  const createReportMutation = useCreateReport();
   const [subTab, setSubTab] = useState<'report' | 'track'>('report');
 
   const [agreed, setAgreed] = useState(false);
-  const [stage, setStage] = useState(0); // 0 = victim, 1 = incident, 2 = impact
-  const [victimData, setVictimData] = useState<any>(null);
-  const [incidentData, setIncidentData] = useState<any>(null);
-  const [impactData, setImpactData] = useState<any>(null);
+  const [stage, setStage] = useState(0); // 0 = incident, 1 = impact
+  const [incidentData, setIncidentData] = useState<IncidentData | null>(null);
+  const [impactData, setImpactData] = useState<ImpactData | null>(null);
 
+  const { data: reports } = useReports(user?.token ?? '', user?.id ?? '');
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
@@ -44,86 +48,62 @@ const ReportScreen = () => {
   }, []);
 
   // local reports list (in-memory). In a real app, persist or use API.
-  const [reports, setReports] = useState<any[]>([
-    {
-      id: '1',
-      title: 'John Doe - Bullying Report',
-      date: '2024-06-01 14:23',
-      status: 'reported',
-      excerpt: 'A student was bullied on the school bus...',
-    },
-    {
-      id: '2',
-      title: 'Jane Smith - Harassment Report',
-      date: '2024-05-28 09:15',
-      status: 'in progress',
-      excerpt: 'An incident of online harassment was reported...',
-    },
-    {
-      id: '3',
-      title: 'Mike Johnson - Cyberbullying Report',
-      date: '2024-05-20 16:45',
-      status: 'resolved',
-      excerpt: 'A case of cyberbullying involving social media...',
-    },
-  ]);
 
   const startReport = () => {
     setAgreed(true);
     setStage(0);
   };
 
-  const handleVictimNext = (data: any) => {
-    const shapedVictim = {
-      name: data.fullName ?? data.name ?? '',
-      email: data.email ?? '',
-      birthday: data.dob ?? data.birthday ?? '',
-      gender: data.gender ?? '',
-      grade: data.grade ?? '',
-      section: data.section ?? '',
-      guardian: {
-        name: data.parentName ?? data.guardian?.name ?? '',
-        phone: data.contactNumber ?? data.guardian?.phone ?? '',
-        email: data.parentEmail ?? data.guardian?.email ?? '',
-        relationship: data.relationship ?? data.guardian?.relationship ?? '',
-        address: data.address ?? data.guardian?.address ?? '',
-      },
-    };
-    setVictimData(shapedVictim);
+  const handleIncidentNext = (data: any) => {
+    setIncidentData(data);
     setStage(1);
   };
 
-  const handleIncidentNext = (data: any) => {
-    setIncidentData(data);
-    setStage(2);
-  };
-
-  const handleImpactNext = (data: any) => {
+  const handleImpactNext = async (data: any) => {
+    // keep local state
     setImpactData(data);
 
-    // assemble report summary and add to list
-    const id = Date.now().toString();
-    const title = victimData?.name
-      ? `${victimData.name} - ${incidentData?.bullyingType ?? 'Report'}`
-      : 'New report';
-    const excerpt = (incidentData?.details ?? '').slice(0, 60);
-    const summary = {
-      id,
-      title,
-      date: new Date().toLocaleString(),
-      status: 'reported',
-      excerpt,
-      full: { victim: victimData, incident: incidentData, impact: data },
-    };
-    setReports((prev) => [summary, ...prev]);
+    try {
+      const form = new FormData();
+      form.append('studentId', String(user?.id ?? ''));
+      form.append('details', incidentData?.details ?? '');
+      let feelingsList = data?.feelings ?? [];
+      if (data?.others) {
+        feelingsList = [...feelingsList, data.others];
+      }
+      form.append('feelings', feelingsList.join(','));
 
-    // reset flow and go to Track tab
-    setAgreed(false);
-    setStage(0);
-    setVictimData(null);
-    setIncidentData(null);
-    setImpactData(null);
-    setSubTab('track');
+      const files = incidentData?.files ?? [];
+      for (let i = 0; i < files.length; i++) {
+        const f: any = files[i];
+        const name = f.name ?? (f.uri ? f.uri.split('/').pop() : `file_${i}`);
+        const type = f.type ?? f.mimeType ?? 'application/octet-stream';
+        // React Native FormData file shape
+        form.append('evidences', {
+          uri: f.uri,
+          name,
+          type,
+        } as any);
+      }
+
+      const token = user?.token || '';
+      const respData = await createReportMutation.mutateAsync({ form, token });
+
+      Alert.alert('Submitted', 'Your report has been submitted.');
+
+      // reset flow and go to Track tab
+      setAgreed(false);
+      setStage(0);
+      setIncidentData(null);
+      setImpactData(null);
+      setSubTab('track');
+    } catch (error: any) {
+      console.error('Error', error);
+      Alert.alert(
+        'Error',
+        error?.message || 'Network error. Please try again.',
+      );
+    }
   };
 
   // Render the right content for the report flow
@@ -146,33 +126,25 @@ const ReportScreen = () => {
           </View>
 
           <StepProgress
-            total={3}
+            total={2}
             active={stage}
-            labels={['Victim Details', 'Incident', 'Impact']}
+            labels={['Incident', 'Impact']}
           />
 
           <View className="flex-1">
             {stage === 0 && (
-              <VictimDetailsForm
-                initial={user as any}
-                onNext={handleVictimNext}
+              <IncidentForm
+                initial={incidentData ?? {}}
+                onNext={handleIncidentNext}
                 onBack={() => setAgreed(false)}
                 keyboardHeight={keyboardHeight}
               />
             )}
             {stage === 1 && (
-              <IncidentForm
-                initial={incidentData ?? {}}
-                onNext={handleIncidentNext}
-                onBack={() => setStage(0)}
-                keyboardHeight={keyboardHeight}
-              />
-            )}
-            {stage === 2 && (
               <ImpactForm
                 initial={impactData ?? {}}
                 onNext={handleImpactNext}
-                onBack={() => setStage(1)}
+                onBack={() => setStage(0)}
                 keyboardHeight={keyboardHeight}
               />
             )}

@@ -1,9 +1,8 @@
-import { useUser } from '@/stores/useUserStore';
 import Constants from 'expo-constants';
 
 export const request = async (
   url: string,
-  useToken: boolean,
+  token: string,
   options: RequestInit = {},
 ) => {
   const envUrl = process.env.BACKEND_URL;
@@ -17,25 +16,21 @@ export const request = async (
   const baseUrl = base.endsWith('/') ? base.slice(0, -1) : base;
 
   console.log('Making request to:', `${baseUrl}${url}`);
-  // Force headers into a plain object
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
-  };
 
-  // Add token if requested
-  if (useToken) {
-    const user = useUser();
-    const token = user?.token;
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-  }
+  const headers: Record<string, string> = {
+    ...(options.body instanceof FormData
+      ? {}
+      : { 'Content-Type': 'application/json' }),
+    ...(options.headers as Record<string, string>),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 
   const response = await fetch(`${baseUrl}${url}`, {
     ...options,
     headers,
   });
+
+  console.log('request status:', response.status);
 
   return response;
 };

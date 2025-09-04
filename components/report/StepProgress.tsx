@@ -51,7 +51,7 @@ export default function StepProgress({
         ))}
       </View>
 
-      <View className="flex-row mt-2">
+      <View className="flex-row just mt-2">
         {Array.from({ length: total }).map((_, i) => (
           <View key={i} className="flex-1 items-center">
             <Text

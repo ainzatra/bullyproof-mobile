@@ -1,4 +1,4 @@
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,49 +6,58 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '@/constants/images';
 import { useLogoutUser, useUser } from '@/stores/useUserStore';
 
+import { useReports } from '@/api/queries';
 import Header from '@/components/Header';
 import ActionCard from '@/components/ui/ActionCard';
 import SummaryCard from '@/components/ui/SummaryCard';
 
-/**
- * Home screen composed from smaller components:
- * - Header (components/Header.tsx)
- * - SummaryCard (components/ui/SummaryCard.tsx)
- * - ActionCard (components/ui/ActionCard.tsx)
- *
- * Uses Nativewind className strings for styling and is responsive.
- */
-
 export default function Home() {
   const user = useUser();
   const logout = useLogoutUser();
+  const { data: reports } = useReports(user?.token ?? '', user?.id ?? '');
+
+  const counts = React.useMemo(() => {
+    const c: Record<string, number> = { submitted: 0, alert: 0, resolved: 0 };
+    (reports ?? []).forEach((r: any) => {
+      const s = String(r?.status ?? '').toLowerCase();
+      if (s.includes('resolved')) c.resolved++;
+      else if (
+        s.includes('inprogress') ||
+        s.includes('in progress') ||
+        s.includes('progress') ||
+        s.includes('alert')
+      )
+        c.alert++;
+      else if (s.includes('pending')) c.submitted++;
+      else c.submitted++;
+    });
+    return c;
+  }, [reports]);
 
   const summary = [
     {
-      id: 'submitted',
-      number: 0,
-      label: 'Submitted',
-      icon: <FontAwesome5 name="file-alt" size={20} color="#16a34a" />,
+      id: 'pending',
+      number: counts.submitted,
+      label: 'Pending',
+      icon: <FontAwesome5 name="file-alt" size={20} color="#fa984d" />,
       bgClass: 'bg-white',
     },
     {
-      id: 'alert',
-      number: 1,
-      label: 'Alert',
-      icon: (
-        <FontAwesome5 name="exclamation-circle" size={20} color="#dc2626" />
-      ),
+      id: 'inprogress',
+      number: counts.alert,
+      label: 'In Progress',
+      icon: <MaterialIcons name="update" size={20} color="#2563eb" />,
       bgClass: 'bg-white',
     },
     {
       id: 'resolved',
-      number: 0,
+      number: counts.resolved,
       label: 'Resolved',
       icon: (
         <Ionicons
           name="checkmark-done-circle-outline"
           size={20}
-          color="#2563eb"
+          color="#047857"
         />
       ),
       bgClass: 'bg-white',

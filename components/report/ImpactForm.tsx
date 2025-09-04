@@ -9,10 +9,7 @@ import {
 import { PrimaryButton } from '../FormControls';
 import TagSelector from './TagSelector';
 
-type ImpactData = {
-  feelings: string[];
-  others?: string;
-};
+import type { ImpactData } from './types';
 
 type Props = {
   initial?: Partial<ImpactData>;

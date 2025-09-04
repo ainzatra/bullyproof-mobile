@@ -39,3 +39,5 @@ const useUserStore = create<UserStore>()(
 export const useUser = () => useUserStore((s) => s.user);
 export const useSetUser = () => useUserStore((s) => s.setUser);
 export const useLogoutUser = () => useUserStore((s) => s.logout);
+
+export default useUserStore;

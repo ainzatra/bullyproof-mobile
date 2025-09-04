@@ -1,5 +1,5 @@
+import { useResendOtp, useVerifyOtp } from '@/api/mutations';
 import { useSetUser } from '@/stores/useUserStore';
-import { request } from '@/utils/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -23,8 +23,8 @@ const VerifyEmail = () => {
   const setUser = useSetUser();
 
   const [otp, setOtp] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
+  const verifyMutation = useVerifyOtp();
+  const resendMutation = useResendOtp();
 
   useEffect(() => {
     if (!email) {
@@ -42,30 +42,19 @@ const VerifyEmail = () => {
       return;
     }
 
-    setLoading(true);
     try {
-      const resp = await request('/auth/verify-otp', false, {
-        method: 'POST',
-        body: JSON.stringify({ email, code: otp.trim() }),
+      const data = await verifyMutation.mutateAsync({
+        email,
+        code: otp.trim(),
       });
-
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => null);
-        Alert.alert(
-          'Verification Failed',
-          err?.message || 'Invalid code or server error',
-        );
-        return;
-      }
-
-      const data = await resp.json().catch(() => ({}));
       console.log('success verify otp', data);
       setUser(data);
       router.replace('/onboarding');
     } catch (error: any) {
-      Alert.alert('Error', error?.message || 'Failed to verify. Try again.');
-    } finally {
-      setLoading(false);
+      Alert.alert(
+        'Verification Failed',
+        error?.message || 'Invalid code or server error',
+      );
     }
   };
 
@@ -74,23 +63,12 @@ const VerifyEmail = () => {
       Alert.alert('Error', 'No email provided.');
       return;
     }
-    setResendLoading(true);
-    try {
-      const resp = await request('/auth/resend-otp', false, {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-      });
 
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => null);
-        Alert.alert('Resend Failed', err?.message || 'Unable to resend code');
-        return;
-      }
+    try {
+      await resendMutation.mutateAsync({ email });
       Alert.alert('Sent', 'Verification code has been resent to your email.');
     } catch (error: any) {
-      Alert.alert('Error', error?.message || 'Failed to resend code.');
-    } finally {
-      setResendLoading(false);
+      Alert.alert('Resend Failed', error?.message || 'Unable to resend code');
     }
   };
 
@@ -117,9 +95,9 @@ const VerifyEmail = () => {
         </View>
 
         <PrimaryButton
-          title={loading ? 'Verifying...' : 'Verify'}
+          title={verifyMutation.isPending ? 'Verifying...' : 'Verify'}
           onPress={onVerify}
-          loading={loading}
+          loading={verifyMutation.isPending}
           additionalClasses={'mt-4'}
         />
 
@@ -129,7 +107,7 @@ const VerifyEmail = () => {
           </Text>
           <TouchableOpacity onPress={onResend} className="px-4 py-2">
             <Text className="text-primary-main font-semibold">
-              {resendLoading ? 'Resending...' : 'Resend code'}
+              {resendMutation.isPending ? 'Resending...' : 'Resend code'}
             </Text>
           </TouchableOpacity>
         </View>
