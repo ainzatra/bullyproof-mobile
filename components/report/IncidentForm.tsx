@@ -64,7 +64,7 @@ export default function IncidentForm({
       <View className="space-y-3">
         <FileUploader
           value={files}
-          onChange={(items) => setFiles(items as any)}
+          onChange={(items) => setFiles(items)}
           maxFiles={5}
           placeholder="Upload Evidence* (Max 5 files)"
         />

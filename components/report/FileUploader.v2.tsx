@@ -8,8 +8,12 @@ import {
   View,
 } from 'react-native';
 
+import * as DocumentPicker from 'expo-document-picker';
+import * as ExpoFileSystem from 'expo-file-system';
+
 type UploadItem = {
-  uri: string;
+  uri?: string;
+  encodedFile: string;
   name?: string;
   size?: number;
   mimeType?: string;
@@ -48,7 +52,6 @@ export default function FileUploaderV2({
     try {
       // Dynamically import expo-document-picker so component degrades gracefully if not installed
       // @ts-ignore
-      const DocumentPicker: any = await import('expo-document-picker');
       console.log('FileUploaderV2: imported expo-document-picker');
 
       // Some versions support multiple selection via `getDocumentAsync({ multiple: true })`
@@ -57,7 +60,7 @@ export default function FileUploaderV2({
         type: '*/*',
         copyToCacheDirectory: true,
         multiple: true,
-      } as any);
+      });
 
       console.log(
         'FileUploaderV2: picker result=',
@@ -121,7 +124,28 @@ export default function FileUploaderV2({
           'FileUploaderV2: calling onChange with next length=',
           next.length,
         );
-        onChange?.(next);
+
+        const getEncoded = async (uri: string, type: string): string => {
+          return (async () => {
+            return await ExpoFileSystem.readAsStringAsync(uri, {
+              encoding: ExpoFileSystem.EncodingType.Base64,
+            }).then((str) => {
+              console.log('str', str);
+              return `${str}`;
+            });
+          })().then((str) => str);
+        };
+
+        const encodedData = await Promise.all(
+          next.map(async ({ uri, ...others }) => ({
+            ...others,
+            uri,
+            encodedFile: await getEncoded(uri || '', others.mimeType || ''),
+          })),
+        );
+
+        console.log('nexting...', encodedData);
+        onChange?.(encodedData);
       } else {
         console.log('FileUploaderV2: no items to add after filtering');
       }

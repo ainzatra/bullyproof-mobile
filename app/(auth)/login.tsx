@@ -64,6 +64,11 @@ const Login = () => {
       setUser(data);
       router.replace('/onboarding');
     } catch (error: any) {
+      console.log({ error });
+      if (error?.message === 'Invalid email or password') {
+        Alert.alert('Invalid email or password');
+        return;
+      }
       if (error?.message === 'Not verified yet') {
         // Navigate to dynamic verify route with the email as a path param
         router.replace({ pathname: '/verify/[email]', params: { email } });

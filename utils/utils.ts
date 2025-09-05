@@ -1,3 +1,4 @@
+// Currently not used
 import Constants from 'expo-constants';
 
 export const request = async (
@@ -5,14 +6,12 @@ export const request = async (
   token: string,
   options: RequestInit = {},
 ) => {
-  const envUrl = process.env.BACKEND_URL;
-
-  const extraUrl =
+  const envUrl =
     (Constants as any)?.expoConfig?.extra?.BACKEND_URL ??
     (Constants as any)?.manifest?.extra?.BACKEND_URL;
 
-  const fallback = 'http://192.168.0.131:3031';
-  const base = envUrl || extraUrl || fallback;
+  const fallback = 'http://192.168.0.132:3031';
+  const base = envUrl || fallback;
   const baseUrl = base.endsWith('/') ? base.slice(0, -1) : base;
 
   console.log('Making request to:', `${baseUrl}${url}`);

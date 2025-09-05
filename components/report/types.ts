@@ -1,8 +1,10 @@
 export type FileRef = {
-  uri: string;
+  uri?: string;
+  encodedFile?: string;
   name?: string;
   type?: string;
   size?: number;
+  mimeType?: string;
 };
 
 export interface IncidentData {

@@ -1,52 +1,55 @@
-import { request } from '@/utils/utils';
-
-async function callApi(url: string, token = '', options: RequestInit = {}) {
-  const resp = await request(url, token, options);
-  const data = await resp.json().catch(() => null);
-
-  if (!resp.ok) {
-    // throw the parsed response (if any) so callers / react-query can handle it
-    throw data || { message: 'Network error' };
-  }
-
-  return data;
-}
+import axios from './axios';
 
 export const auth = {
   login: (payload: { email: string; password: string }) =>
-    callApi('/auth/login', '', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    axios.post('/auth/login', payload).then((res) => res.data),
 
   signup: (payload: any) =>
-    callApi('/auth/signup', '', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    axios.post('/auth/signup', payload).then((res) => res.data),
 
   verifyOtp: (payload: { email: string; code: string }) =>
-    callApi('/auth/verify-otp', '', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    axios.post('/auth/verify-otp', payload).then((res) => res.data),
 
   resendOtp: (payload: { email: string }) =>
-    callApi('/auth/resend-otp', '', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    axios.post('/auth/resend-otp', payload).then((res) => res.data),
 };
 
 export const reports = {
-  createReport: (formData: FormData, token = '') =>
-    callApi('/reports', token, {
-      method: 'POST',
-      body: formData,
-    }),
+  createReport: (formData: Record<string, any>, token = '') =>
+    axios
+      .post('/reports', formData, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      })
+      .then((res) => res.data),
+  // .catch((err) => {
+  //   if (err.response) {
+  //     // Server responded with an error
+  //     console.error('[API ERROR]', {
+  //       status: err.response.status,
+  //       data: err.response.data,
+  //       headers: err.response.headers,
+  //     });
+  //   } else if (err.request) {
+  //     console.log('display dito', { formData, token });
+  //     // Request made but no response received
+  //     console.error('[NETWORK ERROR]', err.message);
+  //   } else {
+  //     // Something happened while setting up the request
+  //     console.error('[AXIOS ERROR]', err.message);
+  //   }
+  //   throw err; // rethrow if you want the caller to handle it
+  // }),
 
   fetchReports: (token: string, id: string) =>
-    callApi(`/reports/${id}`, token, { method: 'GET' }),
+    axios
+      .get(`/reports/${id}`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      })
+      .then((res) => res.data),
 };
 
 export default { auth, reports };

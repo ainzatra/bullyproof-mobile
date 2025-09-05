@@ -9,6 +9,7 @@ import TermsCard from '@/components/report/TermsCard';
 import { ImpactData, IncidentData } from '@/components/report/types';
 import { useUser } from '@/stores/useUserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -24,6 +25,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const ReportScreen = () => {
   const user = useUser();
   const createReportMutation = useCreateReport();
+  const qc = useQueryClient();
   const [subTab, setSubTab] = useState<'report' | 'track'>('report');
 
   const [agreed, setAgreed] = useState(false);
@@ -61,33 +63,58 @@ const ReportScreen = () => {
 
   const handleImpactNext = async (data: any) => {
     // keep local state
+    console.log('impact data', data);
     setImpactData(data);
+
+    console.log('files on impact next', incidentData);
 
     try {
       const form = new FormData();
-      form.append('studentId', String(user?.id ?? ''));
-      form.append('details', incidentData?.details ?? '');
+      const studentId = String(user?.id ?? '');
+      const incidentDetails = incidentData?.details ?? '';
+
+      // form.append('studentId', );
+      // form.append('details', );
       let feelingsList = data?.feelings ?? [];
       if (data?.others) {
         feelingsList = [...feelingsList, data.others];
       }
-      form.append('feelings', feelingsList.join(','));
+      // form.append('feelings', feelingsList.join(','));
 
       const files = incidentData?.files ?? [];
-      for (let i = 0; i < files.length; i++) {
-        const f: any = files[i];
-        const name = f.name ?? (f.uri ? f.uri.split('/').pop() : `file_${i}`);
-        const type = f.type ?? f.mimeType ?? 'application/octet-stream';
-        // React Native FormData file shape
-        form.append('evidences', {
-          uri: f.uri,
-          name,
-          type,
-        } as any);
-      }
+
+      // Append all the evidence files to form data
+      // for (let i = 0; i < files.length; i++) {
+      //   const f = files[i];
+      //   const name = f.name ?? (f.uri ? f.uri.split('/').pop() : `file_${i}`);
+      //   const type = f.type ?? f.mimeType ?? 'application/octet-stream';
+      //   // React Native FormData file shape
+      //   form.append(
+      //     'evidences',
+      //     {
+      //       uri: f.uri,
+      //       name,
+      //       type,
+      //     } as any,
+      //     f.name,
+      //   );
+      // }
 
       const token = user?.token || '';
-      const respData = await createReportMutation.mutateAsync({ form, token });
+
+      const objectToSubmit = {
+        studentId,
+        details: incidentDetails,
+        feelings: feelingsList.join(', '),
+        files,
+      };
+
+      console.log('uploading...', JSON.stringify(objectToSubmit));
+
+      const respData = await createReportMutation.mutateAsync({
+        form: objectToSubmit,
+        token,
+      });
 
       Alert.alert('Submitted', 'Your report has been submitted.');
 

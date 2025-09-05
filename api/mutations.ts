@@ -27,8 +27,13 @@ export const useResendOtp = () =>
 export const useCreateReport = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ form, token }: { form: FormData; token?: string }) =>
-      api.reports.createReport(form, token ?? ''),
+    mutationFn: ({
+      form,
+      token,
+    }: {
+      form: Record<string, any>;
+      token: string;
+    }) => api.reports.createReport(form, token),
     onSuccess: () => {
       // invalidate reports list so it refetches
       qc.invalidateQueries({ queryKey: ['reports'] });
