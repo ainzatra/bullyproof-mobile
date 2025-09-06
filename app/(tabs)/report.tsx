@@ -1,3 +1,4 @@
+import { getBaseUrl } from '@/api/axios';
 import { useCreateReport } from '@/api/mutations';
 import { useReports } from '@/api/queries';
 import Header from '@/components/Header';
@@ -10,6 +11,7 @@ import { ImpactData, IncidentData } from '@/components/report/types';
 import { useUser } from '@/stores/useUserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
+import * as ExpoFileSystem from 'expo-file-system';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -73,48 +75,69 @@ const ReportScreen = () => {
       const studentId = String(user?.id ?? '');
       const incidentDetails = incidentData?.details ?? '';
 
-      // form.append('studentId', );
-      // form.append('details', );
+      form.append('studentId', studentId);
+      form.append('details', incidentDetails);
       let feelingsList = data?.feelings ?? [];
       if (data?.others) {
         feelingsList = [...feelingsList, data.others];
       }
-      // form.append('feelings', feelingsList.join(','));
+      form.append('feelings', feelingsList.join(','));
 
       const files = incidentData?.files ?? [];
 
       // Append all the evidence files to form data
-      // for (let i = 0; i < files.length; i++) {
-      //   const f = files[i];
-      //   const name = f.name ?? (f.uri ? f.uri.split('/').pop() : `file_${i}`);
-      //   const type = f.type ?? f.mimeType ?? 'application/octet-stream';
-      //   // React Native FormData file shape
-      //   form.append(
-      //     'evidences',
-      //     {
-      //       uri: f.uri,
-      //       name,
-      //       type,
-      //     } as any,
-      //     f.name,
-      //   );
-      // }
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        const name = f.name ?? (f.uri ? f.uri.split('/').pop() : `file_${i}`);
+        const type = f.type ?? f.mimeType ?? 'application/octet-stream';
+        // React Native FormData file shape
+        form.append(
+          'evidences',
+          {
+            uri: f.uri,
+            name,
+            type,
+          } as any,
+          f.name,
+        );
+      }
+
+      // const encodedData = await Promise.all(
+      //   files.map(async ({ uri, ...others }) => ({
+      //     uri,
+      //     ...others,
+      //     encodedFile: await getEncoded(uri || '', others.mimeType || ''),
+      //   })),
+      // );
 
       const token = user?.token || '';
 
-      const objectToSubmit = {
-        studentId,
-        details: incidentDetails,
-        feelings: feelingsList.join(', '),
-        files,
-      };
+      // const objectToSubmit = {
+      //   studentId,
+      //   details: incidentDetails,
+      //   feelings: feelingsList.join(', '),
+      //   files: encodedData,
+      // };
 
-      console.log('uploading...', JSON.stringify(objectToSubmit));
+      // console.log('uploading...', JSON.stringify(objectToSubmit));
 
-      const respData = await createReportMutation.mutateAsync({
-        form: objectToSubmit,
-        token,
+      // const respData = await createReportMutation.mutateAsync({
+      //   form,
+      //   token,
+      // });
+      console.log('Report payload:', form);
+      const API_URL = getBaseUrl();
+      const response = await fetch(`${API_URL}/reports`, {
+        method: 'POST',
+        body: form,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+      console.log('Report submitted');
+
+      qc.invalidateQueries({ queryKey: ['reports'] });
+      console.log('Refetched report list');
 
       Alert.alert('Submitted', 'Your report has been submitted.');
 
@@ -127,10 +150,19 @@ const ReportScreen = () => {
     } catch (error: any) {
       console.error('Error', error);
       Alert.alert(
-        'Error',
+        'Report Submission Error',
         error?.message || 'Network error. Please try again.',
       );
     }
+  };
+
+  const getEncoded = async (uri: string, type: string): Promise<string> => {
+    return await ExpoFileSystem.readAsStringAsync(uri, {
+      encoding: ExpoFileSystem.EncodingType.Base64,
+    }).then((str) => {
+      console.log('str', str);
+      return `${str}`;
+    });
   };
 
   // Render the right content for the report flow
@@ -173,6 +205,8 @@ const ReportScreen = () => {
                 onNext={handleImpactNext}
                 onBack={() => setStage(0)}
                 keyboardHeight={keyboardHeight}
+                loading={createReportMutation.isPending}
+                disabled={createReportMutation.isPending}
               />
             )}
           </View>

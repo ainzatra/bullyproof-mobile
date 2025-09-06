@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
 
-const getBaseUrl = () => {
+export const getBaseUrl = () => {
   const base =
     (Constants as any)?.expoConfig?.extra?.BACKEND_URL ??
     (Constants as any)?.manifest?.extra?.BACKEND_URL;

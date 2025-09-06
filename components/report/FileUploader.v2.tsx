@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import * as DocumentPicker from 'expo-document-picker';
-import * as ExpoFileSystem from 'expo-file-system';
 
 type UploadItem = {
   uri?: string;
@@ -125,27 +124,27 @@ export default function FileUploaderV2({
           next.length,
         );
 
-        const getEncoded = async (uri: string, type: string): string => {
-          return (async () => {
-            return await ExpoFileSystem.readAsStringAsync(uri, {
-              encoding: ExpoFileSystem.EncodingType.Base64,
-            }).then((str) => {
-              console.log('str', str);
-              return `${str}`;
-            });
-          })().then((str) => str);
-        };
+        // const getEncoded = async (uri: string, type: string): string => {
+        //   return (async () => {
+        //     return await ExpoFileSystem.readAsStringAsync(uri, {
+        //       encoding: ExpoFileSystem.EncodingType.Base64,
+        //     }).then((str) => {
+        //       console.log('str', str);
+        //       return `${str}`;
+        //     });
+        //   })().then((str) => str);
+        // };
 
-        const encodedData = await Promise.all(
-          next.map(async ({ uri, ...others }) => ({
-            ...others,
-            uri,
-            encodedFile: await getEncoded(uri || '', others.mimeType || ''),
-          })),
-        );
+        // const encodedData = await Promise.all(
+        //   next.map(async ({ uri, ...others }) => ({
+        //     ...others,
+        //     uri,
+        //     encodedFile: await getEncoded(uri || '', others.mimeType || ''),
+        //   })),
+        // );
 
-        console.log('nexting...', encodedData);
-        onChange?.(encodedData);
+        console.log('nexting...', next);
+        onChange?.(next);
       } else {
         console.log('FileUploaderV2: no items to add after filtering');
       }
