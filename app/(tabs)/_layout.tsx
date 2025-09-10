@@ -1,7 +1,7 @@
-import { Tabs } from 'expo-router'
-import React from 'react'
-import { StyleSheet } from 'react-native'
-import CustomTabBar from '../../components/CustomTabBar'
+import { Tabs } from 'expo-router';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import CustomTabBar from '../../components/CustomTabBar';
 
 const _layout = () => {
   return (
@@ -14,13 +14,13 @@ const _layout = () => {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home'
+          title: 'Home',
         }}
       />
       <Tabs.Screen
         name="seek-help"
         options={{
-          title: 'Seek Help'
+          title: 'Seek Help',
         }}
       />
       <Tabs.Screen
@@ -32,13 +32,19 @@ const _layout = () => {
       <Tabs.Screen
         name="tips"
         options={{
-          title: 'Tips'
+          title: 'Tips',
+        }}
+      />
+      <Tabs.Screen
+        name="report/[id]"
+        options={{
+          headerShown: false,
         }}
       />
     </Tabs>
-  )
-}
+  );
+};
 
-export default _layout
+export default _layout;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

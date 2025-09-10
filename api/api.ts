@@ -44,6 +44,15 @@ export const reports = {
 
   fetchReports: (token: string, id: string) =>
     axios
+      .get(`/reports/user/${id}`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      })
+      .then((res) => res.data),
+
+  fetchReportById: (id: string, token: string) =>
+    axios
       .get(`/reports/${id}`, {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),

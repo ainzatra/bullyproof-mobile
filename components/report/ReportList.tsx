@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { ReportStatus } from './types';
@@ -40,7 +41,7 @@ export default function ReportList({ reports = [], onSelect }: Props) {
   const renderItem = ({ item }: { item: ReportSummary }) => {
     return (
       <TouchableOpacity
-        onPress={() => onSelect?.(item)}
+        onPress={() => router.push(`/report/${item.id}`)}
         className="bg-white rounded-lg p-3 mb-3 border border-slate-200"
       >
         <View className="flex-row justify-between items-start">

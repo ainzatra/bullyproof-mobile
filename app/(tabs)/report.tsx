@@ -8,6 +8,7 @@ import ReportList from '@/components/report/ReportList';
 import StepProgress from '@/components/report/StepProgress';
 import TermsCard from '@/components/report/TermsCard';
 import { ImpactData, IncidentData } from '@/components/report/types';
+import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import { useUser } from '@/stores/useUserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,6 +30,7 @@ const ReportScreen = () => {
   const createReportMutation = useCreateReport();
   const qc = useQueryClient();
   const [subTab, setSubTab] = useState<'report' | 'track'>('report');
+  const [loading, setLoading] = useState(false);
 
   const [agreed, setAgreed] = useState(false);
   const [stage, setStage] = useState(0); // 0 = incident, 1 = impact
@@ -64,6 +66,7 @@ const ReportScreen = () => {
   };
 
   const handleImpactNext = async (data: any) => {
+    setLoading(true);
     // keep local state
     console.log('impact data', data);
     setImpactData(data);
@@ -153,6 +156,8 @@ const ReportScreen = () => {
         'Report Submission Error',
         error?.message || 'Network error. Please try again.',
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -205,8 +210,6 @@ const ReportScreen = () => {
                 onNext={handleImpactNext}
                 onBack={() => setStage(0)}
                 keyboardHeight={keyboardHeight}
-                loading={createReportMutation.isPending}
-                disabled={createReportMutation.isPending}
               />
             )}
           </View>
@@ -220,6 +223,7 @@ const ReportScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header />
+      <LoadingOverlay message="Submitting Report" visible={loading} />
       <View className="px-4 pt-2">
         <View className="flex-row items-center justify-between">
           <View />

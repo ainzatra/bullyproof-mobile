@@ -11,4 +11,13 @@ export const useReports = (token: string, id: string) =>
     refetchInterval: 300000, // refetch every 5 minutes
   });
 
+export const useReportById = (token: string, id: string) =>
+  useQuery({
+    queryKey: ['report', id],
+    queryFn: async () => await api.reports.fetchReportById(id, token),
+    // only fetch when a token and id is available
+    enabled: Boolean(token) && !!id,
+    retry: false,
+    refetchInterval: 300000, // refetch every 5 minutes
+  });
 export default { useReports };

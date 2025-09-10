@@ -16,8 +16,6 @@ type Props = {
   onNext: (data: ImpactData) => void;
   onBack?: () => void;
   keyboardHeight?: number;
-  loading?: boolean;
-  disabled?: boolean;
 };
 
 /**
@@ -30,8 +28,6 @@ export default function ImpactForm({
   onNext,
   onBack,
   keyboardHeight = 0,
-  loading = false,
-  disabled = false,
 }: Props) {
   const defaultOptions = [
     'Hurt',
@@ -101,8 +97,6 @@ export default function ImpactForm({
             title="Submit Report"
             onPress={handleProceed}
             additionalClasses="w-1/2"
-            loading={loading}
-            disabled={disabled}
           />
         </View>
       </View>
