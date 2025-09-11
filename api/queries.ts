@@ -8,7 +8,7 @@ export const useReports = (token: string, id: string) =>
     // only fetch when a token and id is available
     enabled: Boolean(token) && !!id,
     retry: false,
-    refetchInterval: 300000, // refetch every 5 minutes
+    refetchInterval: 60000, // refetch every 1 minute
   });
 
 export const useReportById = (token: string, id: string) =>
@@ -18,6 +18,6 @@ export const useReportById = (token: string, id: string) =>
     // only fetch when a token and id is available
     enabled: Boolean(token) && !!id,
     retry: false,
-    refetchInterval: 300000, // refetch every 5 minutes
+    refetchInterval: 60000, // refetch every 1 minute
   });
 export default { useReports };

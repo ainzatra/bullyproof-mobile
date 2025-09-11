@@ -124,9 +124,9 @@ export default function ReportDetails({ report }: Props) {
             </Text>
           </View>
 
-          <View className="space-y-3">
+          <View className="space-y-3 gap-2">
             {/* Toxicity with simple bar */}
-            <View className="flex-row items-center">
+            <View className="flex-row items-baseline">
               <Text className="w-36 font-medium text-slate-700">Toxicity</Text>
               <View className="flex-1">
                 <View className="flex-row items-center justify-between">
