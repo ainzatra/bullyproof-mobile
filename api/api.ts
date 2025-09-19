@@ -61,4 +61,15 @@ export const reports = {
       .then((res) => res.data),
 };
 
-export default { auth, reports };
+const chat = {
+  getRecentMessages: async (id: string, token: string) =>
+    axios
+      .get(`/chat/${id}/messages`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => res.data),
+};
+
+export default { auth, reports, chat };

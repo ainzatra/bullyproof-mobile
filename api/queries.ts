@@ -21,3 +21,10 @@ export const useReportById = (token: string, id: string) =>
     refetchInterval: 60000, // refetch every 1 minute
   });
 export default { useReports };
+
+export const useFetchRecentMessages = (token: string, id: string) =>
+  useQuery({
+    queryKey: ['messages'],
+    queryFn: async () => await api.chat.getRecentMessages(id, token),
+    enabled: !!id && !!token,
+  });
