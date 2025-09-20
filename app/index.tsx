@@ -11,7 +11,7 @@ const index = () => {
 
   return (
     <SafeAreaView className="px-4 flex h-full items-center justify-around bg-primary-main py-10">
-      <Image source={images.logoDark} className="w-72 h-72" />
+      <Image source={images.logoDarkv2} className="w-72 h-72" />
 
       <View className="w-full px-8">
         <TouchableOpacity

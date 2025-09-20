@@ -75,7 +75,7 @@ export default function MenuSheet({ visible, onClose }: Props) {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Image
-                source={images.logo}
+                source={images.logov2}
                 className="w-12 h-12 rounded-full"
                 resizeMode="cover"
               />

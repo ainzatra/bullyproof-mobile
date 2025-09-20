@@ -6,6 +6,7 @@ import ImpactForm from '@/components/report/ImpactForm';
 import IncidentForm from '@/components/report/IncidentForm';
 import ReportList from '@/components/report/ReportList';
 import StepProgress from '@/components/report/StepProgress';
+import SubmissionModal from '@/components/report/SubmissionModal';
 import TermsCard from '@/components/report/TermsCard';
 import { ImpactData, IncidentData } from '@/components/report/types';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
@@ -31,6 +32,7 @@ const ReportScreen = () => {
   const qc = useQueryClient();
   const [subTab, setSubTab] = useState<'report' | 'track'>('report');
   const [loading, setLoading] = useState(false);
+  const [showSubmissionModal, setShowSubmissionModal] = useState(false);
 
   const [agreed, setAgreed] = useState(false);
   const [stage, setStage] = useState(0); // 0 = incident, 1 = impact
@@ -142,14 +144,8 @@ const ReportScreen = () => {
       qc.invalidateQueries({ queryKey: ['reports'] });
       console.log('Refetched report list');
 
-      Alert.alert('Submitted', 'Your report has been submitted.');
-
-      // reset flow and go to Track tab
-      setAgreed(false);
-      setStage(0);
-      setIncidentData(null);
-      setImpactData(null);
-      setSubTab('track');
+      // Show submission modal with helpful resources instead of simple alert.
+      setShowSubmissionModal(true);
     } catch (error: any) {
       console.error('Error', error);
       Alert.alert(
@@ -224,6 +220,18 @@ const ReportScreen = () => {
     <SafeAreaView className="flex-1 bg-white">
       <Header />
       <LoadingOverlay message="Submitting Report" visible={loading} />
+      <SubmissionModal
+        visible={showSubmissionModal}
+        onClose={() => {
+          setShowSubmissionModal(false);
+          // reset flow and go to Track tab
+          setAgreed(false);
+          setStage(0);
+          setIncidentData(null);
+          setImpactData(null);
+          setSubTab('track');
+        }}
+      />
       <View className="px-4 pt-2">
         <View className="flex-row items-center justify-between">
           <View />

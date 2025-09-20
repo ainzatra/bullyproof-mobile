@@ -92,7 +92,7 @@ const Login = () => {
         <View className="flex-1 min-h-screen">
           <View className="px-6 pt-12 pb-6">
             <View className="flex-row items-center">
-              <Image source={images.logoDark} className="w-12 h-12 mr-3" />
+              <Image source={images.logoDarkv2} className="w-12 h-12 mr-3" />
               <Text className="text-white text-3xl font-extrabold">Login</Text>
             </View>
             <Text className="text-[#bcd3df] mt-2">

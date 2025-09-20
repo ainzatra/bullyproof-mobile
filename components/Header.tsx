@@ -36,7 +36,7 @@ export default function Header({ notificationCount = 0 }: Props) {
         </View>
 
         <Image
-          source={images.logo}
+          source={images.logov2}
           className="w-10 h-10"
           resizeMode="contain"
         />
