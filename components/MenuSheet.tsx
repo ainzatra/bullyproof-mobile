@@ -75,7 +75,7 @@ export default function MenuSheet({ visible, onClose }: Props) {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Image
-                source={images.logov2}
+                source={user?.avatar ? { uri: user.avatar } : images.logoDarkv2}
                 className="w-12 h-12 rounded-full"
                 resizeMode="cover"
               />
@@ -91,9 +91,7 @@ export default function MenuSheet({ visible, onClose }: Props) {
 
             <TouchableOpacity
               onPress={() => {
-                onClose();
-                // No profile screen yet
-                // router.push('/profile');
+                navigateTo('/profile');
               }}
               className="p-2"
               accessibilityRole="button"
@@ -194,7 +192,7 @@ export default function MenuSheet({ visible, onClose }: Props) {
           <View className="my-4 px-4 gap-2">
             <TouchableOpacity
               onPress={confirmDeleteAccount}
-              className="bg-red-500 rounded-md items-center justify-center py-3"
+              className="bg-pink-500 rounded-md items-center justify-center py-3"
             >
               <Text className="text-white font-semibold">DELETE ACCOUNT</Text>
             </TouchableOpacity>

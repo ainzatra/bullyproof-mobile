@@ -9,6 +9,7 @@ type User = {
   email: string;
   token: string;
   isVerified?: boolean;
+  avatar?: string;
 };
 
 type UserStore = {

@@ -1,3 +1,4 @@
+import { UpdatePassword, UpdateUserInfo } from '@/types/types';
 import axios from './axios';
 
 export const auth = {
@@ -12,6 +13,19 @@ export const auth = {
 
   resendOtp: (payload: { email: string }) =>
     axios.post('/auth/resend-otp', payload).then((res) => res.data),
+
+  sendResetOtp: (payload: { email: string }) =>
+    axios.post('/auth/send-reset-otp', payload).then((res) => res.data),
+
+  verifyResetOtp: (payload: { email: string; code: string }) =>
+    axios.post('/auth/verify-reset-otp', payload).then((res) => res.data),
+
+  resetPassword: (payload: {
+    email: string;
+    code: string;
+    new: string;
+    confirm: string;
+  }) => axios.post('/auth/reset-password', payload).then((res) => res.data),
 };
 
 export const reports = {
@@ -72,4 +86,47 @@ const chat = {
       .then((res) => res.data),
 };
 
-export default { auth, reports, chat };
+const me = {
+  fetchUserInfo: async (id: string, token: string) =>
+    axios
+      .get(`/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => res.data),
+
+  updateInfo: async (id: string, token: string, payload: UpdateUserInfo) =>
+    axios
+      .put(`/users/update-info/${id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => res.data),
+
+  updatePassword: async (id: string, token: string, payload: UpdatePassword) =>
+    axios
+      .put(`/users/update-password/${id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => res.data),
+
+  updateAvatar: async (id: string, token: string, file: File) =>
+    axios
+      .putForm(
+        `/users/update-avatar/${id}`,
+        { file },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      )
+      .then((res) => res.data),
+};
+
+export default { auth, reports, chat, me };

@@ -144,17 +144,15 @@ const Login = () => {
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Password"
+                  additionalClass="flex-1"
                 />
               </View>
 
               <View className="flex-row justify-end items-center px-1">
                 <TouchableOpacity
-                  onPress={() =>
-                    Alert.alert(
-                      'Forgot Password',
-                      'Password reset flow goes here',
-                    )
-                  }
+                  onPress={() => {
+                    router.replace('/forgot-password');
+                  }}
                 >
                   <Text className="text-sm text-gray-600">
                     Forgot Password?

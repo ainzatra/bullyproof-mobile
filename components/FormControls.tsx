@@ -93,7 +93,7 @@ export const PasswordField = ({
   const [secure, setSecure] = useState(true);
   return (
     <View
-      className={`flex-row items-center flex-1 rounded px-4 py-1 ${additionalClass}`}
+      className={`flex-row items-center rounded px-4 py-1 ${additionalClass}`}
     >
       <TextInput
         value={value}
@@ -123,6 +123,7 @@ type DropdownProps = {
   onValueChange?: (v: string) => void;
   placeholder?: string;
   style?: any;
+  additionalClass?: string;
 };
 
 export const DropdownSelect = ({
@@ -131,6 +132,7 @@ export const DropdownSelect = ({
   onValueChange,
   placeholder = 'Select',
   style,
+  additionalClass,
 }: DropdownProps) => {
   const [open, setOpen] = useState(false);
   const selectedLabel = options.find((o) => o.value === selectedValue)?.label;
@@ -138,7 +140,7 @@ export const DropdownSelect = ({
     <View>
       <Pressable
         onPress={() => setOpen(true)}
-        className="bg-gray-200 rounded px-4 py-3 flex-row items-center justify-between"
+        className={`flex-row items-center justify-between ${additionalClass ?? 'bg-gray-200 rounded px-4 py-3'}`}
         style={style}
       >
         <Text

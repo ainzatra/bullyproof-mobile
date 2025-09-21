@@ -77,7 +77,7 @@ export default function Home() {
         {/* User Info */}
         <View className="bg-blue-800 rounded-xl p-4 flex-row items-center mb-4">
           <Image
-            source={images.onboard1}
+            source={user?.avatar ? { uri: user.avatar } : images.logoDarkv2}
             className="w-14 h-14 rounded-full mr-3 border-2 border-white"
             resizeMode="cover"
           />

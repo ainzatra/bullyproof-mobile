@@ -31,7 +31,7 @@ export default function RootLayout() {
 
     // No user -> go to landing/index
     router.replace('/'); // safe navigation
-  }, [ready, user]);
+  }, [ready, user?.id]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -62,6 +62,12 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="report"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="profile"
           options={{
             headerShown: false,
           }}

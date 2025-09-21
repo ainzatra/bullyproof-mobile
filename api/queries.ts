@@ -8,7 +8,7 @@ export const useReports = (token: string, id: string) =>
     // only fetch when a token and id is available
     enabled: Boolean(token) && !!id,
     retry: false,
-    refetchInterval: 60000, // refetch every 1 minute
+    refetchInterval: 120000, // refetch every 2 minutes
   });
 
 export const useReportById = (token: string, id: string) =>
@@ -18,13 +18,19 @@ export const useReportById = (token: string, id: string) =>
     // only fetch when a token and id is available
     enabled: Boolean(token) && !!id,
     retry: false,
-    refetchInterval: 60000, // refetch every 1 minute
+    refetchInterval: 120000, // refetch every 2 minutes
   });
-export default { useReports };
 
 export const useFetchRecentMessages = (token: string, id: string) =>
   useQuery({
     queryKey: ['messages'],
     queryFn: async () => await api.chat.getRecentMessages(id, token),
+    enabled: !!id && !!token,
+  });
+
+export const useFetchUserInfo = (token: string, id: string) =>
+  useQuery({
+    queryKey: ['user-info'],
+    queryFn: async () => await api.me.fetchUserInfo(id, token),
     enabled: !!id && !!token,
   });
