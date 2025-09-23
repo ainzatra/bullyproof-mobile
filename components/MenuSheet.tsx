@@ -190,12 +190,12 @@ export default function MenuSheet({ visible, onClose }: Props) {
           </View>
 
           <View className="my-4 px-4 gap-2">
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={confirmDeleteAccount}
-              className="bg-pink-500 rounded-md items-center justify-center py-3"
+              className="bg-red-500 rounded-md items-center justify-center py-3"
             >
               <Text className="text-white font-semibold">DELETE ACCOUNT</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               onPress={confirmLogout}
               className="border border-primary-main rounded-md items-center justify-center py-3"
