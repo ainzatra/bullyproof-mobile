@@ -10,6 +10,7 @@ export type FileRef = {
 export interface IncidentData {
   files?: FileRef[];
   details?: string;
+  knowsBully?: string;
 }
 
 export interface ImpactData {

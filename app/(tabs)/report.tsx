@@ -79,9 +79,11 @@ const ReportScreen = () => {
       const form = new FormData();
       const studentId = String(user?.id ?? '');
       const incidentDetails = incidentData?.details ?? '';
+      const knowsBully = incidentData?.knowsBully ?? 'false';
 
       form.append('studentId', studentId);
       form.append('details', incidentDetails);
+      form.append('knowsBully', knowsBully);
       let feelingsList = data?.feelings ?? [];
       if (data?.others) {
         feelingsList = [...feelingsList, data.others];
@@ -139,6 +141,11 @@ const ReportScreen = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.message || 'Failed to submit report');
+      }
+      console.log('Report submission response:', result);
       console.log('Report submitted');
 
       qc.invalidateQueries({ queryKey: ['reports'] });

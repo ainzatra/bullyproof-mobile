@@ -1,3 +1,4 @@
+import { Picker } from '@react-native-picker/picker';
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -31,6 +32,7 @@ export default function IncidentForm({
 }: Props) {
   const [files, setFiles] = useState<FileRef[]>(initial.files ?? []);
   const [details, setDetails] = useState(initial.details ?? '');
+  const [knowsBully, setKnowsBully] = useState(initial.knowsBully ?? 'false');
   const maxChars = 2000;
 
   const bullyOptions = [
@@ -42,9 +44,9 @@ export default function IncidentForm({
     { label: 'Sexual', value: 'sexual' },
   ];
 
-  const whoOptions = [
-    { label: 'Known', value: 'known' },
-    { label: 'Unkown', value: 'unkown' },
+  const knowsBullyOptions = [
+    { label: 'Yes', value: 'true' },
+    { label: 'No', value: 'false' },
   ];
 
   return (
@@ -69,6 +71,26 @@ export default function IncidentForm({
           placeholder="Upload Evidence* (Max 5 files)"
         />
 
+        <View className="my-2">
+          <Text className="text-sm text-slate-600 mb-2">
+            Do you know the person who bullied you?
+          </Text>
+          <View className="bg-gray-100 rounded-md">
+            <Picker
+              selectedValue={knowsBully}
+              onValueChange={(itemValue) => setKnowsBully(itemValue)}
+              style={{ height: 50 }}
+            >
+              {knowsBullyOptions.map((option) => (
+                <Picker.Item
+                  key={option.value}
+                  label={option.label}
+                  value={option.value}
+                />
+              ))}
+            </Picker>
+          </View>
+        </View>
         <View className="mt-2">
           <Text className="text-sm text-slate-600 mb-2">Incident Details*</Text>
           <View className=" bg-gray-100 h-40 rounded-md">
@@ -81,7 +103,8 @@ export default function IncidentForm({
               className="rounded px-4 py-4 text-slate-700"
             />
           </View>
-          <Text className="text-xs text-slate-400 text-right mt-1">
+
+          <Text className="text-xs text-slate-400 text-right my-1">
             {details.length}/{maxChars}
           </Text>
         </View>
@@ -99,6 +122,7 @@ export default function IncidentForm({
               onNext({
                 files,
                 details,
+                knowsBully,
               })
             }
             additionalClasses="w-1/2"

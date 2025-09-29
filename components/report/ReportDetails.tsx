@@ -22,6 +22,7 @@ type ReportShape = {
   notes?: string;
   actionTaken?: string;
   createdAt?: string;
+  knowsBully: boolean;
 };
 
 type Props = {
@@ -242,21 +243,20 @@ export default function ReportDetails({ report }: Props) {
 
         {/* Action & text sections */}
         <View className="space-y-3">
-          <View className="flex-row items-start">
-            <Text className="w-36 font-medium text-slate-700">
-              Action Taken
-            </Text>
-            <Text className="text-slate-700">
-              {report.actionTaken ?? 'None'}
-            </Text>
-          </View>
-
           <View>
             <Text className="font-semibold text-slate-800">Summary</Text>
 
-            <Text className="text-slate-600 mt-1 text-justify">
+            <Text className="text-slate-600 my-1 text-justify">
               {' '}
               {report.ai_flag?.reason ?? '-'}
+            </Text>
+          </View>
+          <View className="items-start">
+            <Text className="w-36 font-medium text-slate-700">
+              Action Taken
+            </Text>
+            <Text className="text-slate-700 my-1">
+              {report.actionTaken ?? '-'}
             </Text>
           </View>
 
