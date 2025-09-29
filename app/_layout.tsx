@@ -25,13 +25,18 @@ export default function RootLayout() {
         router.replace('/login');
         return;
       }
+
+      if (user.blocked) {
+        router.replace('/blocked');
+        return;
+      }
       router.replace('/onboarding'); // safe navigation
       return;
     }
 
     // No user -> go to landing/index
     router.replace('/'); // safe navigation
-  }, [ready, user?.id]);
+  }, [ready, user?.id, user?.blocked]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -68,6 +73,12 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="profile"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="blocked"
           options={{
             headerShown: false,
           }}

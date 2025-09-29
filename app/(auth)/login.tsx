@@ -60,9 +60,15 @@ const Login = () => {
 
     try {
       const data = await loginMutation.mutateAsync({ email, password });
-
+      console.log('Login successful', { data });
+      if (data.blocked) {
+        console.log('User is blocked, navigating to blocked screen');
+        router.replace('/blocked');
+        return;
+      }
       setUser(data);
-      router.replace('/onboarding');
+
+      // Navigation will be handled by _layout.tsx based on user state
     } catch (error: any) {
       console.log({ error });
       if (error?.message === 'Invalid email or password') {

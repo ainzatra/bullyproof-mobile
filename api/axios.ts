@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
+import useUserStore from '../stores/useUserStore';
 
 export const getBaseUrl = () => {
   const base =
@@ -90,6 +91,15 @@ axiosInstance.interceptors.response.use(
           2,
         ),
       );
+      // Check for blocked user
+      if (resp.status === 403 && resp.data?.message === 'User is blocked') {
+        const store = useUserStore.getState();
+        if (store.user) {
+          console.log('[AXIOS] User is blocked');
+          store.setUser({ ...store.user, blocked: true });
+        }
+      }
+
       // reject with response data when available
       return Promise.reject(resp.data);
     } else {

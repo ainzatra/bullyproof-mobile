@@ -10,6 +10,7 @@ type User = {
   token: string;
   isVerified?: boolean;
   avatar?: string;
+  blocked?: boolean;
 };
 
 type UserStore = {
