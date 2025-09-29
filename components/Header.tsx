@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
 import MenuSheet from './MenuSheet';
-import Badge from './ui/Badge';
 import IconButton from './ui/IconButton';
 
 type Props = {
@@ -27,12 +26,12 @@ export default function Header({ notificationCount = 0 }: Props) {
             <Feather name="menu" size={22} color="#0f172a" />
           </IconButton>
 
-          <View className="ml-2 relative">
+          {/* <View className="ml-2 relative">
             <IconButton className="p-2">
               <Feather name="bell" size={22} color="#0f172a" />
               <Badge count={notificationCount} />
             </IconButton>
-          </View>
+          </View> */}
         </View>
 
         <Image

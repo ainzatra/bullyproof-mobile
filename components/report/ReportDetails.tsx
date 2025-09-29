@@ -20,7 +20,7 @@ type ReportShape = {
   };
   status?: ReportStatus | string;
   notes?: string;
-  actionTaken?: string;
+  actionsTaken?: string;
   createdAt?: string;
   knowsBully: boolean;
 };
@@ -256,7 +256,7 @@ export default function ReportDetails({ report }: Props) {
               Action Taken
             </Text>
             <Text className="text-slate-700 my-1">
-              {report.actionTaken ?? '-'}
+              {report.actionsTaken ?? '-'}
             </Text>
           </View>
 

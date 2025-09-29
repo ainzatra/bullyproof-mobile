@@ -12,9 +12,11 @@ import { ImpactData, IncidentData } from '@/components/report/types';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import { useUser } from '@/stores/useUserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ExpoFileSystem from 'expo-file-system';
-import { useEffect, useState } from 'react';
+import { router } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -41,6 +43,20 @@ const ReportScreen = () => {
 
   const { data: reports } = useReports(user?.token ?? '', user?.id ?? '');
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    if (subTab === 'track') {
+      qc.invalidateQueries({ queryKey: ['reports'] });
+    }
+  }, [subTab]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (subTab === 'track') {
+        qc.invalidateQueries({ queryKey: ['reports'] });
+      }
+    }, [subTab]),
+  );
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', (e: any) => {
@@ -277,9 +293,7 @@ const ReportScreen = () => {
         ) : (
           <ReportList
             reports={reports}
-            onSelect={(r) =>
-              console.log('selected', JSON.stringify(r, null, 2))
-            }
+            onSelect={(r) => router.push(`/report/${r.id}`)}
           />
         )}
       </View>
