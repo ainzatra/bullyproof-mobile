@@ -1,4 +1,5 @@
 import { useReportById } from '@/api/queries';
+import AuthGuard from '@/components/AuthGuard';
 import ReportDetails from '@/components/report/ReportDetails';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import { useUser } from '@/stores/useUserStore';
@@ -31,37 +32,39 @@ const ReportByIdScreen: React.FC = () => {
   } = useReportById(user?.token ?? '', id);
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <LoadingOverlay visible={isLoading} message="Loading report..." />
+    <AuthGuard>
+      <SafeAreaView className="flex-1 bg-white">
+        <LoadingOverlay visible={isLoading} message="Loading report..." />
 
-      <View className="px-4 pt-3 flex-row items-center justify-between">
-        <TouchableOpacity
-          onPress={() => router.replace('/report')}
-          className="px-2 py-1 flex-row items-center gap-2"
-        >
-          <AntDesign name="leftcircle" size={18} color="black" />
-          <Text className="text-slate-700">Back</Text>
-        </TouchableOpacity>
+        <View className="px-4 pt-3 flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={() => router.replace('/report')}
+            className="px-2 py-1 flex-row items-center gap-2"
+          >
+            <AntDesign name="leftcircle" size={18} color="black" />
+            <Text className="text-slate-700">Back</Text>
+          </TouchableOpacity>
 
-        <Text className="text-lg font-semibold text-[#063b82]">
-          Report Details
-        </Text>
+          <Text className="text-lg font-semibold text-[#063b82]">
+            Report Details
+          </Text>
 
-        <View style={{ width: 40 }} />
-      </View>
+          <View style={{ width: 40 }} />
+        </View>
 
-      <View className="flex-1">
-        {isError ? (
-          <View className="p-4">
-            <Text className="text-center text-rose-600">
-              Failed to load report. Please try again later.
-            </Text>
-          </View>
-        ) : (
-          <ReportDetails report={report ?? null} />
-        )}
-      </View>
-    </SafeAreaView>
+        <View className="flex-1">
+          {isError ? (
+            <View className="p-4">
+              <Text className="text-center text-rose-600">
+                Failed to load report. Please try again later.
+              </Text>
+            </View>
+          ) : (
+            <ReportDetails report={report ?? null} />
+          )}
+        </View>
+      </SafeAreaView>
+    </AuthGuard>
   );
 };
 

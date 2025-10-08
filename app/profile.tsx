@@ -5,6 +5,7 @@ import {
   useUpdateUserInfo,
 } from '@/api/mutations';
 import { useFetchUserInfo } from '@/api/queries';
+import AuthGuard from '@/components/AuthGuard';
 import { DatePickerField, DropdownSelect } from '@/components/FormControls';
 import { images } from '@/constants/images';
 import { useSetUser, useUser } from '@/stores/useUserStore';
@@ -313,271 +314,277 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0} // adjust if needed
-      >
-        <ScrollView
-          contentContainerStyle={{ padding: 20 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+    <AuthGuard>
+      <SafeAreaView className="flex-1 bg-white">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0} // adjust if needed
         >
-          <View className="items-center mt-4">
-            <TouchableOpacity
-              onPress={openAvatarPicker}
-              accessibilityRole="button"
-            >
-              <Image
-                source={displayAvatarSource}
-                className="w-28 h-28 rounded-full bg-slate-100"
-              />
-            </TouchableOpacity>
-            <Text className="text-xs text-slate-500 mt-2">
-              Tap avatar to change
-            </Text>
-          </View>
-
-          {/* Personal information */}
-          <View className="mt-6">
-            <Text className="text-sm text-slate-500">Full name</Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-              placeholder="Your full name"
-            />
-          </View>
-
-          <View className="mt-4">
-            <Text className="text-sm text-slate-500">Email</Text>
-            <TextInput
-              value={email}
-              editable={false}
-              keyboardType="email-address"
-              className="border rounded px-3 py-2 mt-2 text-slate-900 bg-slate-50"
-              placeholder="you@example.com"
-              autoCapitalize="none"
-            />
-          </View>
-
-          <View className="mt-4 flex-row gap-3">
-            <View className="flex-1">
-              <Text className="text-sm text-slate-500">Birthday</Text>
-
-              <DatePickerField
-                value={birthday}
-                onChange={(value) => setBirthday(value)}
-                placeholder="Date of birth"
-                additionalClass="border rounded px-3 py-2 mt-2 text-slate-900 bg-white"
-              />
-            </View>
-
-            <View style={{ width: 12 }} />
-
-            <View className="w-28">
-              <Text className="text-sm text-slate-500">Gender</Text>
-              <DropdownSelect
-                options={[
-                  { label: 'Male', value: 'male' },
-                  { label: 'Female', value: 'female' },
-                  { label: 'Other', value: 'other' },
-                ]}
-                selectedValue={gender}
-                onValueChange={setGender}
-                placeholder="Select gender"
-                additionalClass="border rounded px-3 py-2 mt-2 text-slate-900"
-              />
-            </View>
-          </View>
-
-          <View className="mt-4 flex-row gap-3">
-            <View className="w-28">
-              <Text className="text-sm text-slate-500">Grade</Text>
-              <TextInput
-                value={grade}
-                onChangeText={setGrade}
-                placeholder="Grade"
-                keyboardType="number-pad"
-                className="border rounded px-3 py-2 mt-2 text-slate-900"
-              />
-            </View>
-
-            <View className="flex-1">
-              <Text className="text-sm text-slate-500">Section</Text>
-              <TextInput
-                value={section}
-                onChangeText={setSection}
-                placeholder="Section"
-                className="border rounded px-3 py-2 mt-2 text-slate-900"
-              />
-            </View>
-          </View>
-
-          {/* Guardian */}
-          <Text className="text-sm text-slate-500 mt-6">Guardian / Parent</Text>
-          <View className="mt-2">
-            <TextInput
-              value={guardianName}
-              onChangeText={setGuardianName}
-              placeholder="Full name"
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-            />
-            <TextInput
-              value={guardianEmail}
-              onChangeText={setGuardianEmail}
-              placeholder="Email"
-              keyboardType="email-address"
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-            />
-            <TextInput
-              value={guardianPhone}
-              onChangeText={setGuardianPhone}
-              placeholder="Contact number"
-              keyboardType="phone-pad"
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-            />
-            <TextInput
-              value={guardianRelationship}
-              onChangeText={setGuardianRelationship}
-              placeholder="Relationship"
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-            />
-            <TextInput
-              value={guardianAddress}
-              onChangeText={setGuardianAddress}
-              placeholder="Address"
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-            />
-          </View>
-
-          {/* Password / Avatar controls */}
-          <View className="mt-6 gap-3">
-            <TouchableOpacity
-              onPress={() => setPasswordModalVisible(true)}
-              className="px-4 py-3 rounded-md border border-slate-200 items-center justify-center bg-white"
-            >
-              <Text className="text-slate-800">Change Password</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Save / Cancel */}
-          <View className="mt-6 flex-row gap-3">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="flex-1 px-4 py-3 rounded-full bg-slate-100 items-center justify-center"
-            >
-              <Text className="text-slate-700">Cancel</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleSaveProfile}
-              disabled={saving}
-              className="flex-1 px-4 py-3 rounded-full bg-primary-main items-center justify-center"
-            >
-              <Text className="text-white font-semibold">
-                {saving ? 'Saving...' : 'Save'}
+          <ScrollView
+            contentContainerStyle={{ padding: 20 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View className="items-center mt-4">
+              <TouchableOpacity
+                onPress={openAvatarPicker}
+                accessibilityRole="button"
+              >
+                <Image
+                  source={displayAvatarSource}
+                  className="w-28 h-28 rounded-full bg-slate-100"
+                />
+              </TouchableOpacity>
+              <Text className="text-xs text-slate-500 mt-2">
+                Tap avatar to change
               </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+            </View>
 
-        {/* Avatar modal (options) */}
-        <Modal
-          visible={avatarModalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setAvatarModalVisible(false)}
-        >
-          <Pressable
-            className="flex-1 bg-black/50"
-            onPress={() => setAvatarModalVisible(false)}
-          />
-          <View className="bg-white rounded-t-3xl p-4">
-            <Text className="text-lg font-semibold mb-4">Update Avatar</Text>
-            <TouchableOpacity className="py-3" onPress={openAvatarPicker}>
-              <Text>Choose from library</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="py-3">
-              <Text className="text-rose-600"></Text>
-            </TouchableOpacity>
+            {/* Personal information */}
+            <View className="mt-6">
+              <Text className="text-sm text-slate-500">Full name</Text>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+                placeholder="Your full name"
+              />
+            </View>
 
             <View className="mt-4">
+              <Text className="text-sm text-slate-500">Email</Text>
+              <TextInput
+                value={email}
+                editable={false}
+                keyboardType="email-address"
+                className="border rounded px-3 py-2 mt-2 text-slate-900 bg-slate-50"
+                placeholder="you@example.com"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View className="mt-4 flex-row gap-3">
+              <View className="flex-1">
+                <Text className="text-sm text-slate-500">Birthday</Text>
+
+                <DatePickerField
+                  value={birthday}
+                  onChange={(value) => setBirthday(value)}
+                  placeholder="Date of birth"
+                  additionalClass="border rounded px-3 py-2 mt-2 text-slate-900 bg-white"
+                />
+              </View>
+
+              <View style={{ width: 12 }} />
+
+              <View className="w-28">
+                <Text className="text-sm text-slate-500">Gender</Text>
+                <DropdownSelect
+                  options={[
+                    { label: 'Male', value: 'male' },
+                    { label: 'Female', value: 'female' },
+                    { label: 'Other', value: 'other' },
+                  ]}
+                  selectedValue={gender}
+                  onValueChange={setGender}
+                  placeholder="Select gender"
+                  additionalClass="border rounded px-3 py-2 mt-2 text-slate-900"
+                />
+              </View>
+            </View>
+
+            <View className="mt-4 flex-row gap-3">
+              <View className="w-28">
+                <Text className="text-sm text-slate-500">Grade</Text>
+                <TextInput
+                  value={grade}
+                  onChangeText={setGrade}
+                  placeholder="Grade"
+                  keyboardType="number-pad"
+                  className="border rounded px-3 py-2 mt-2 text-slate-900"
+                />
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm text-slate-500">Section</Text>
+                <TextInput
+                  value={section}
+                  onChangeText={setSection}
+                  placeholder="Section"
+                  className="border rounded px-3 py-2 mt-2 text-slate-900"
+                />
+              </View>
+            </View>
+
+            {/* Guardian */}
+            <Text className="text-sm text-slate-500 mt-6">
+              Guardian / Parent
+            </Text>
+            <View className="mt-2">
+              <TextInput
+                value={guardianName}
+                onChangeText={setGuardianName}
+                placeholder="Full name"
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+              />
+              <TextInput
+                value={guardianEmail}
+                onChangeText={setGuardianEmail}
+                placeholder="Email"
+                keyboardType="email-address"
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+              />
+              <TextInput
+                value={guardianPhone}
+                onChangeText={setGuardianPhone}
+                placeholder="Contact number"
+                keyboardType="phone-pad"
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+              />
+              <TextInput
+                value={guardianRelationship}
+                onChangeText={setGuardianRelationship}
+                placeholder="Relationship"
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+              />
+              <TextInput
+                value={guardianAddress}
+                onChangeText={setGuardianAddress}
+                placeholder="Address"
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+              />
+            </View>
+
+            {/* Password / Avatar controls */}
+            <View className="mt-6 gap-3">
               <TouchableOpacity
-                onPress={() => setAvatarModalVisible(false)}
-                className="py-3 items-center"
+                onPress={() => setPasswordModalVisible(true)}
+                className="px-4 py-3 rounded-md border border-slate-200 items-center justify-center bg-white"
               >
-                <Text className="text-slate-700">Close</Text>
+                <Text className="text-slate-800">Change Password</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </Modal>
 
-        {/* Change password modal */}
-        <Modal
-          visible={passwordModalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setPasswordModalVisible(false)}
-        >
-          <Pressable
-            className="flex-1 bg-black/50"
-            onPress={() => setPasswordModalVisible(false)}
-          />
-          <View className="bg-white rounded-t-3xl p-4">
-            <Text className="text-lg font-semibold mb-4">Change Password</Text>
-
-            <Text className="text-sm text-slate-500">Current password</Text>
-            <TextInput
-              value={oldPassword}
-              onChangeText={setOldPassword}
-              secureTextEntry
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-              placeholder="Current password"
-            />
-
-            <Text className="text-sm text-slate-500 mt-4">New password</Text>
-            <TextInput
-              value={newPassword}
-              onChangeText={setNewPassword}
-              secureTextEntry
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-              placeholder="New password"
-            />
-
-            <Text className="text-sm text-slate-500 mt-4">
-              Confirm password
-            </Text>
-            <TextInput
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              className="border rounded px-3 py-2 mt-2 text-slate-900"
-              placeholder="Confirm new password"
-            />
-
+            {/* Save / Cancel */}
             <View className="mt-6 flex-row gap-3">
               <TouchableOpacity
-                onPress={() => setPasswordModalVisible(false)}
+                onPress={() => router.back()}
                 className="flex-1 px-4 py-3 rounded-full bg-slate-100 items-center justify-center"
               >
                 <Text className="text-slate-700">Cancel</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={handleChangePassword}
-                disabled={changingPassword}
+                onPress={handleSaveProfile}
+                disabled={saving}
                 className="flex-1 px-4 py-3 rounded-full bg-primary-main items-center justify-center"
               >
                 <Text className="text-white font-semibold">
-                  {changingPassword ? 'Saving...' : 'Save'}
+                  {saving ? 'Saving...' : 'Save'}
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </Modal>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </ScrollView>
+
+          {/* Avatar modal (options) */}
+          <Modal
+            visible={avatarModalVisible}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setAvatarModalVisible(false)}
+          >
+            <Pressable
+              className="flex-1 bg-black/50"
+              onPress={() => setAvatarModalVisible(false)}
+            />
+            <View className="bg-white rounded-t-3xl p-4">
+              <Text className="text-lg font-semibold mb-4">Update Avatar</Text>
+              <TouchableOpacity className="py-3" onPress={openAvatarPicker}>
+                <Text>Choose from library</Text>
+              </TouchableOpacity>
+              <TouchableOpacity className="py-3">
+                <Text className="text-rose-600"></Text>
+              </TouchableOpacity>
+
+              <View className="mt-4">
+                <TouchableOpacity
+                  onPress={() => setAvatarModalVisible(false)}
+                  className="py-3 items-center"
+                >
+                  <Text className="text-slate-700">Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          {/* Change password modal */}
+          <Modal
+            visible={passwordModalVisible}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setPasswordModalVisible(false)}
+          >
+            <Pressable
+              className="flex-1 bg-black/50"
+              onPress={() => setPasswordModalVisible(false)}
+            />
+            <View className="bg-white rounded-t-3xl p-4">
+              <Text className="text-lg font-semibold mb-4">
+                Change Password
+              </Text>
+
+              <Text className="text-sm text-slate-500">Current password</Text>
+              <TextInput
+                value={oldPassword}
+                onChangeText={setOldPassword}
+                secureTextEntry
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+                placeholder="Current password"
+              />
+
+              <Text className="text-sm text-slate-500 mt-4">New password</Text>
+              <TextInput
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+                placeholder="New password"
+              />
+
+              <Text className="text-sm text-slate-500 mt-4">
+                Confirm password
+              </Text>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                className="border rounded px-3 py-2 mt-2 text-slate-900"
+                placeholder="Confirm new password"
+              />
+
+              <View className="mt-6 flex-row gap-3">
+                <TouchableOpacity
+                  onPress={() => setPasswordModalVisible(false)}
+                  className="flex-1 px-4 py-3 rounded-full bg-slate-100 items-center justify-center"
+                >
+                  <Text className="text-slate-700">Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleChangePassword}
+                  disabled={changingPassword}
+                  className="flex-1 px-4 py-3 rounded-full bg-primary-main items-center justify-center"
+                >
+                  <Text className="text-white font-semibold">
+                    {changingPassword ? 'Saving...' : 'Save'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </AuthGuard>
   );
 }

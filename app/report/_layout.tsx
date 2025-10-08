@@ -1,16 +1,19 @@
+import AuthGuard from '@/components/AuthGuard';
 import { Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
 const _layout = () => {
   return (
-    <Stack>
-      <Stack.Screen
-        name="[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack>
+    <AuthGuard>
+      <Stack>
+        <Stack.Screen
+          name="[id]"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </AuthGuard>
   );
 };
 

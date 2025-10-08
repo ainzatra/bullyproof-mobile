@@ -1,3 +1,4 @@
+import AuthGuard from '@/components/AuthGuard';
 import Slide from '@/components/Slide';
 import { images } from '@/constants/images';
 import { useUser } from '@/stores/useUserStore';
@@ -108,38 +109,40 @@ const Onboarding = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary-main">
-      <View className="items-end p-4 mt-10 me-5">
-        <TouchableOpacity onPress={onSkip}>
-          <Text className="text-white text-2xl">Skip</Text>
-        </TouchableOpacity>
-      </View>
+    <AuthGuard>
+      <SafeAreaView className="flex-1 bg-primary-main">
+        <View className="items-end p-4 mt-10 me-5">
+          <TouchableOpacity onPress={onSkip}>
+            <Text className="text-white text-2xl">Skip</Text>
+          </TouchableOpacity>
+        </View>
 
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-        contentContainerStyle={{ alignItems: 'center' }}
-      >
-        {slides.map((sld, i) => (
-          <Slide
-            key={i}
-            title={sld.title}
-            description={sld.description}
-            index={i}
-            total={slides.length}
-            onSkip={onSkip}
-            onNext={goNext}
-            width={width}
-            bgColor={sld.bgColor || 'bg-primary-main'}
-            image={sld.image}
-          />
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+        <ScrollView
+          ref={scrollRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+          contentContainerStyle={{ alignItems: 'center' }}
+        >
+          {slides.map((sld, i) => (
+            <Slide
+              key={i}
+              title={sld.title}
+              description={sld.description}
+              index={i}
+              total={slides.length}
+              onSkip={onSkip}
+              onNext={goNext}
+              width={width}
+              bgColor={sld.bgColor || 'bg-primary-main'}
+              image={sld.image}
+            />
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </AuthGuard>
   );
 };
 
