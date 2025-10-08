@@ -80,10 +80,10 @@ You’re in control. Reporting doesn’t mean you’re causing trouble — it me
     icon: 'call-outline',
     details: `Sometimes, just talking makes a big difference. We’re always here for you.
 
-📍 Location: Room 210, 2nd Floor, Main Building
+📍 Location: 2nd Floor of the Holy Child Academy Building, Bustos, Bulacan
 ⏰ Hours: 8:00 AM – 5:00 PM, Monday to Friday
 📞 Phone: (044) 123-4567
-✉️ Email: guidance@office.edu.ph`,
+✉️ Email: bullyproofapp1@gmail.com`,
   },
   {
     id: '5',

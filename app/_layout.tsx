@@ -93,6 +93,30 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="about"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="contact"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="privacy"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="terms"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="blocked"
           options={{
             headerShown: false,
