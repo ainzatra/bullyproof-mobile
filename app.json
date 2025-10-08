@@ -59,7 +59,7 @@
       "eas": {
         "projectId": "ec49644a-19c8-461c-9ab6-5127aecf8534"
       },
-      "BACKEND_URL": "http://192.168.0.131:3031"
+      "BACKEND_URL": "https://api.bullyproofapp.com"
     },
     "owner": "slyfer151"
   }
