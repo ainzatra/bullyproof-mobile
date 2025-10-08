@@ -75,7 +75,7 @@ export const reports = {
       .then((res) => res.data),
 };
 
-const chat = {
+export const chat = {
   getRecentMessages: async (id: string, token: string) =>
     axios
       .get(`/chat/${id}/messages`, {
@@ -86,7 +86,7 @@ const chat = {
       .then((res) => res.data),
 };
 
-const me = {
+export const me = {
   fetchUserInfo: async (id: string, token: string) =>
     axios
       .get(`/users/${id}`, {
@@ -129,4 +129,45 @@ const me = {
       .then((res) => res.data),
 };
 
-export default { auth, reports, chat, me };
+export const notifications = {
+  registerToken: async (
+    token: string,
+    userId: string,
+    deviceId: string,
+    platform: string,
+    userToken: string,
+  ) =>
+    axios
+      .post(
+        '/notification/register-token',
+        {
+          token,
+          userId,
+          deviceId,
+          platform,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      )
+      .then((res) => res.data),
+
+  unregisterToken: async (token: string, userToken: string) =>
+    axios
+      .post(
+        '/notification/unregister-token',
+        {
+          token,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      )
+      .then((res) => res.data),
+};
+
+export default { auth, reports, chat, me, notifications };

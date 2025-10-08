@@ -36,7 +36,7 @@ const ReportByIdScreen: React.FC = () => {
 
       <View className="px-4 pt-3 flex-row items-center justify-between">
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.replace('/report')}
           className="px-2 py-1 flex-row items-center gap-2"
         >
           <AntDesign name="leftcircle" size={18} color="black" />

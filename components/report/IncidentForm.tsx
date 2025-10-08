@@ -86,6 +86,7 @@ export default function IncidentForm({
                   key={option.value}
                   label={option.label}
                   value={option.value}
+                  color="black"
                 />
               ))}
             </Picker>
@@ -100,7 +101,7 @@ export default function IncidentForm({
               placeholder="Describe the incident (2000 characters)"
               multiline
               numberOfLines={6}
-              className="rounded px-4 py-4 text-slate-700"
+              className="rounded px-4 py-4 text-black placeholder:text-black"
             />
           </View>
 

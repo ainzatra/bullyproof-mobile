@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bullyproof.bullyproof",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +22,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.bullyproof.bullyproof"
+      "package": "com.bullyproof.bullyproof",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -35,6 +40,15 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/app-logo-v2.png",
+          "color": "#ffffff",
+          "sounds": ["./assets/sounds/notification.wav"],
+          "defaultChannel": "default"
+        }
       ]
     ],
     "experiments": {
@@ -45,7 +59,7 @@
       "eas": {
         "projectId": "ec49644a-19c8-461c-9ab6-5127aecf8534"
       },
-      "BACKEND_URL": "https://api.bullyproofapp.com"
+      "BACKEND_URL": "http://192.168.0.131:3031"
     },
     "owner": "slyfer151"
   }

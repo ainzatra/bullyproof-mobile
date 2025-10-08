@@ -203,9 +203,9 @@ const Signup = () => {
 
             <View className="flex-row gap-3">
               <DropdownSelect
-                options={Array.from({ length: 12 }, (_, i) => ({
-                  label: `Grade ${i + 1}`,
-                  value: `${i + 1}`,
+                options={Array.from({ length: 6 }, (_, i) => ({
+                  label: `Grade ${i + 7}`,
+                  value: `${i + 7}`,
                 }))}
                 selectedValue={formData.grade}
                 onValueChange={(value) => handleChange('grade', value)}

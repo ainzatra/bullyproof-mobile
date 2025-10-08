@@ -1,3 +1,5 @@
+import { useSimpleNotifications } from '@/hooks/useSimpleNotifications';
+import { getInitialNotification } from '@/services/SimpleNotificationHandler';
 import { useUser } from '@/stores/useUserStore';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
@@ -10,6 +12,16 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const queryClient = new QueryClient();
 
+  // Initialize notifications
+  useSimpleNotifications();
+
+  // Handle initial notification when app is opened from closed state
+  useEffect(() => {
+    if (ready) {
+      getInitialNotification();
+    }
+  }, [ready]);
+
   // Run redirect after mount
   useEffect(() => {
     setReady(true); // layout is mounted
@@ -17,6 +29,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!ready) return;
+
+    // Note: We'll let the initial notification handle navigation
+    // The user redirect logic will run after notification navigation
 
     if (user) {
       // Only treat explicit `false` as not verified. If `isVerified` is `true` or `undefined`,

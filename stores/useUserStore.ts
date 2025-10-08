@@ -1,3 +1,4 @@
+import { notifications } from '@/api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { create } from 'zustand';
@@ -16,7 +17,7 @@ type User = {
 type UserStore = {
   user: User | null;
   setUser: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 const useUserStore = create<UserStore>()(
@@ -26,7 +27,25 @@ const useUserStore = create<UserStore>()(
 
       setUser: (user: User) => set({ user }),
 
-      logout: () => {
+      logout: async () => {
+        const currentUser = useUserStore.getState().user;
+
+        // Unregister push token before logging out
+        if (currentUser?.token) {
+          try {
+            const pushToken = await AsyncStorage.getItem('pushToken');
+            if (pushToken) {
+              await notifications.unregisterToken(pushToken, currentUser.token);
+              await AsyncStorage.removeItem('pushToken');
+            }
+          } catch (error) {
+            console.error(
+              'Error unregistering push token during logout:',
+              error,
+            );
+          }
+        }
+
         set({ user: null });
         router.replace('/');
       },
