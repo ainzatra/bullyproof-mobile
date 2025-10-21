@@ -1,7 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import ReportStatusBadge from './ReportStatusBadge';
 import { ReportStatus } from './types';
 
 type ReportShape = {
@@ -17,6 +16,7 @@ type ReportShape = {
     sentiment?: string;
     urgency?: string;
     reason: string; // summary actually
+    prescription?: string;
   };
   status?: ReportStatus | string;
   notes?: string;
@@ -109,10 +109,6 @@ export default function ReportDetails({ report }: Props) {
                 {createdAtLabel}
               </Text>
             ) : null}
-          </View>
-
-          <View className="items-end">
-            <ReportStatusBadge status={String(report.status ?? 'Pending')} />
           </View>
         </View>
 
@@ -251,18 +247,24 @@ export default function ReportDetails({ report }: Props) {
               {report.ai_flag?.reason ?? '-'}
             </Text>
           </View>
-          <View className="items-start">
+          {/* <View className="items-start">
             <Text className="w-36 font-medium text-slate-700">
               Action Taken
             </Text>
             <Text className="text-slate-700 my-1">
               {report.actionsTaken ?? '-'}
             </Text>
-          </View>
+          </View> */}
 
-          <View>
+          {/* <View>
             <Text className="font-semibold text-slate-800">Notes</Text>
             <Text className="text-slate-600 mt-1">{report.notes ?? '-'}</Text>
+          </View> */}
+          <View>
+            <Text className="font-semibold text-slate-800">Prescription</Text>
+            <Text className="text-slate-600 my-1 text-justify">
+              {report.ai_flag.prescription ?? '-'}
+            </Text>
           </View>
         </View>
       </View>

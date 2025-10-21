@@ -1,4 +1,4 @@
-import { FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -37,29 +37,9 @@ export default function Home() {
   const summary = [
     {
       id: 'pending',
-      number: counts.submitted,
-      label: 'Pending',
+      number: reports?.length ?? 0,
+      label: 'Total Reports',
       icon: <FontAwesome5 name="file-alt" size={20} color="#fa984d" />,
-      bgClass: 'bg-white',
-    },
-    {
-      id: 'inprogress',
-      number: counts.alert,
-      label: 'In Progress',
-      icon: <MaterialIcons name="update" size={20} color="#2563eb" />,
-      bgClass: 'bg-white',
-    },
-    {
-      id: 'resolved',
-      number: counts.resolved,
-      label: 'Resolved',
-      icon: (
-        <Ionicons
-          name="checkmark-done-circle-outline"
-          size={20}
-          color="#047857"
-        />
-      ),
       bgClass: 'bg-white',
     },
   ];

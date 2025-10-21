@@ -63,11 +63,6 @@ export default function ReportList({ reports = [], onSelect }: Props) {
           </View>
 
           <View className="ml-3 items-end">
-            <Text
-              className={`text-xs px-2 py-1 rounded ${item.status === 'Resolved' ? 'bg-emerald-100 text-emerald-700' : item.status === 'InProgress' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700'}`}
-            >
-              {item.status === 'InProgress' ? 'In Progress' : item.status}
-            </Text>
             <Text className="text-xs text-slate-400 mt-2">{item.date}</Text>
           </View>
         </View>

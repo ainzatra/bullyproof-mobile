@@ -2,13 +2,11 @@ import { getBaseUrl } from '@/api/axios';
 import { useCreateReport } from '@/api/mutations';
 import { useReports } from '@/api/queries';
 import Header from '@/components/Header';
-import ImpactForm from '@/components/report/ImpactForm';
 import IncidentForm from '@/components/report/IncidentForm';
 import ReportList from '@/components/report/ReportList';
-import StepProgress from '@/components/report/StepProgress';
 import SubmissionModal from '@/components/report/SubmissionModal';
 import TermsCard from '@/components/report/TermsCard';
-import { ImpactData, IncidentData } from '@/components/report/types';
+import { IncidentData } from '@/components/report/types';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import { useUser } from '@/stores/useUserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -37,9 +35,7 @@ const ReportScreen = () => {
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
 
   const [agreed, setAgreed] = useState(false);
-  const [stage, setStage] = useState(0); // 0 = incident, 1 = impact
   const [incidentData, setIncidentData] = useState<IncidentData | null>(null);
-  const [impactData, setImpactData] = useState<ImpactData | null>(null);
 
   const { data: reports } = useReports(user?.token ?? '', user?.id ?? '');
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -75,38 +71,29 @@ const ReportScreen = () => {
 
   const startReport = () => {
     setAgreed(true);
-    setStage(0);
   };
 
-  const handleIncidentNext = (data: any) => {
-    setIncidentData(data);
-    setStage(1);
-  };
-
-  const handleImpactNext = async (data: any) => {
+  const handleIncidentSubmit = async (data: any) => {
     setLoading(true);
     // keep local state
-    console.log('impact data', data);
-    setImpactData(data);
+    console.log('incident data', data);
+    setIncidentData(data);
 
-    console.log('files on impact next', incidentData);
+    console.log('files on incident submit', data);
 
     try {
       const form = new FormData();
       const studentId = String(user?.id ?? '');
-      const incidentDetails = incidentData?.details ?? '';
-      const knowsBully = incidentData?.knowsBully ?? 'false';
+      const incidentDetails = data?.details ?? '';
+      const knowsBully = data?.knowsBully ?? 'false';
 
       form.append('studentId', studentId);
       form.append('details', incidentDetails);
       form.append('knowsBully', knowsBully);
-      let feelingsList = data?.feelings ?? [];
-      if (data?.others) {
-        feelingsList = [...feelingsList, data.others];
-      }
-      form.append('feelings', feelingsList.join(','));
+      // Remove feelings from the form as we're no longer collecting impact data
+      form.append('feelings', 'N/A');
 
-      const files = incidentData?.files ?? [];
+      const files = data?.files ?? [];
 
       // Append all the evidence files to form data
       for (let i = 0; i < files.length; i++) {
@@ -125,29 +112,8 @@ const ReportScreen = () => {
         );
       }
 
-      // const encodedData = await Promise.all(
-      //   files.map(async ({ uri, ...others }) => ({
-      //     uri,
-      //     ...others,
-      //     encodedFile: await getEncoded(uri || '', others.mimeType || ''),
-      //   })),
-      // );
-
       const token = user?.token || '';
 
-      // const objectToSubmit = {
-      //   studentId,
-      //   details: incidentDetails,
-      //   feelings: feelingsList.join(', '),
-      //   files: encodedData,
-      // };
-
-      // console.log('uploading...', JSON.stringify(objectToSubmit));
-
-      // const respData = await createReportMutation.mutateAsync({
-      //   form,
-      //   token,
-      // });
       console.log('Report payload:', form);
       const API_URL = getBaseUrl();
       const response = await fetch(`${API_URL}/reports`, {
@@ -208,29 +174,13 @@ const ReportScreen = () => {
             </Text>
           </View>
 
-          <StepProgress
-            total={2}
-            active={stage}
-            labels={['Incident', 'Impact']}
-          />
-
           <View className="flex-1">
-            {stage === 0 && (
-              <IncidentForm
-                initial={incidentData ?? {}}
-                onNext={handleIncidentNext}
-                onBack={() => setAgreed(false)}
-                keyboardHeight={keyboardHeight}
-              />
-            )}
-            {stage === 1 && (
-              <ImpactForm
-                initial={impactData ?? {}}
-                onNext={handleImpactNext}
-                onBack={() => setStage(0)}
-                keyboardHeight={keyboardHeight}
-              />
-            )}
+            <IncidentForm
+              initial={incidentData ?? {}}
+              onNext={handleIncidentSubmit}
+              onBack={() => setAgreed(false)}
+              keyboardHeight={keyboardHeight}
+            />
           </View>
 
           <View className="h-6" />
@@ -249,9 +199,7 @@ const ReportScreen = () => {
           setShowSubmissionModal(false);
           // reset flow and go to Track tab
           setAgreed(false);
-          setStage(0);
           setIncidentData(null);
-          setImpactData(null);
           setSubTab('track');
         }}
       />

@@ -59,10 +59,6 @@ export default function IncidentForm({
       keyboardDismissMode="interactive"
       className="px-4 pt-2 bg-white"
     >
-      <Text className="text-center text-lg text-slate-600 font-semibold mb-4">
-        Incident
-      </Text>
-
       <View className="space-y-3">
         <FileUploader
           value={files}
@@ -118,7 +114,7 @@ export default function IncidentForm({
             <Text className="text-slate-700 text-center">Back</Text>
           </TouchableOpacity>
           <PrimaryButton
-            title="Proceed"
+            title="Submit Report"
             onPress={() =>
               onNext({
                 files,

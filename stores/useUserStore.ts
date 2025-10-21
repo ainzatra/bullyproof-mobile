@@ -35,8 +35,13 @@ const useUserStore = create<UserStore>()(
           try {
             const pushToken = await AsyncStorage.getItem('pushToken');
             if (pushToken) {
-              await notifications.unregisterToken(pushToken, currentUser.token);
+              const result = await notifications.unregisterToken(
+                pushToken,
+                currentUser.token,
+              );
               await AsyncStorage.removeItem('pushToken');
+
+              console.log('Unregister token', result);
             }
           } catch (error) {
             console.error(
